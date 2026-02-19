@@ -10,10 +10,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --red:      #C44B2E;
-      --orange:   #E8834A;
       --cream:    #FFF8F0;
       --dark:     #2C1810;
       --muted:    #7A6055;
@@ -21,11 +19,10 @@
       --sat:      #7C3AED;
       --sun:      #0EA05E;
       --hotel:    #C44B2E;
-      --christina:#E91E8C;
+      --ch:       #E91E8C;
       --safe-top: env(safe-area-inset-top,    0px);
       --safe-bot: env(safe-area-inset-bottom, 0px);
     }
-
     html, body { height: 100dvh; overflow: hidden; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
@@ -35,44 +32,42 @@
       flex-direction: column;
     }
 
-    /* ── HEADER ──────────────────────────────────────────── */
+    /* ── HEADER ──────────────────────────────────── */
     .header {
       background: linear-gradient(135deg, #9C2E1A 0%, #C44B2E 55%, #E07840 100%);
       color: white;
       padding-top: var(--safe-top);
       flex-shrink: 0;
-      z-index: 200;
     }
     .header-inner {
-      padding: 13px 18px 12px;
+      padding: 12px 16px 11px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .header-text h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
-    .header-text p  { font-size: 12px; opacity: 0.82; margin-top: 1px; font-weight: 500; }
+    .header-text h1 { font-size: 19px; font-weight: 800; letter-spacing: -.3px; }
+    .header-text p  { font-size: 11px; opacity: .82; margin-top: 1px; }
     .header-badge {
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.35);
       border-radius: 20px;
-      padding: 4px 11px;
+      padding: 3px 10px;
       font-size: 11px;
       font-weight: 700;
     }
 
-    /* ── TABS ────────────────────────────────────────────── */
+    /* ── TABS ────────────────────────────────────── */
     .tabs {
       display: flex;
       background: white;
       border-bottom: 1px solid #EDE4DC;
       flex-shrink: 0;
-      z-index: 190;
     }
     .tab {
       flex: 1;
-      padding: 12px 6px;
+      padding: 11px 4px;
       text-align: center;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--muted);
       cursor: pointer;
@@ -83,21 +78,18 @@
     }
     .tab.active { color: var(--red); border-bottom-color: var(--red); }
 
-    /* ── CONTENT ─────────────────────────────────────────── */
+    /* ── CONTENT ─────────────────────────────────── */
     .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
     .pane    { display: none; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
     .pane.active { display: flex; }
 
-    /* ── MAP ─────────────────────────────────────────────── */
+    /* ── MAP ─────────────────────────────────────── */
     #map { flex: 1; min-height: 0; }
-
     .map-controls {
       background: white;
-      padding: 8px 10px;
+      padding: 7px 10px;
       display: flex;
       gap: 6px;
-      flex-wrap: nowrap;
-      align-items: center;
       flex-shrink: 0;
       border-bottom: 1px solid #EDE4DC;
       overflow-x: auto;
@@ -105,7 +97,6 @@
       scrollbar-width: none;
     }
     .map-controls::-webkit-scrollbar { display: none; }
-
     .chip {
       display: inline-flex;
       align-items: center;
@@ -123,174 +114,197 @@
       flex-shrink: 0;
     }
     .chip input { display: none; }
-    .chip.off   { opacity: 0.32; }
+    .chip.off { opacity: .32; }
     .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-    /* ── TOAST ───────────────────────────────────────────── */
-    #toast {
-      position: fixed;
-      bottom: calc(var(--safe-bot) + 70px);
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: rgba(44,24,16,0.88);
-      color: white;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 9px 16px;
-      border-radius: 20px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity .3s, transform .3s;
-      z-index: 9999;
-      white-space: nowrap;
-    }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* ── POPUP ───────────────────────────────────────────── */
-    .leaflet-popup-content-wrapper {
-      border-radius: 14px !important;
-      padding: 4px !important;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.20) !important;
-    }
+    /* ── POPUP ───────────────────────────────────── */
+    .leaflet-popup-content-wrapper { border-radius: 14px !important; padding: 4px !important; box-shadow: 0 6px 24px rgba(0,0,0,.20) !important; }
     .leaflet-popup-content { margin: 12px 14px !important; }
-
-    .pw { font-family: -apple-system, sans-serif; min-width: 230px; max-width: 280px; }
+    .pw { font-family: -apple-system, sans-serif; min-width: 220px; max-width: 275px; }
     .pw-name { font-weight: 800; font-size: 15px; color: var(--dark); margin-bottom: 5px; }
-    .pw-sub  { font-size: 12px; color: var(--christina); font-weight: 700; margin-bottom: 4px; }
+    .pw-sub  { font-size: 12px; color: var(--ch); font-weight: 700; margin-bottom: 4px; }
     .pw-desc { font-size: 13px; color: #555; line-height: 1.45; margin-bottom: 7px; }
-    .pw-tip  {
-      font-size: 12px; color: #777; font-style: italic; line-height: 1.4;
-      margin-bottom: 9px; border-left: 3px solid #EDE4DC; padding-left: 8px;
-    }
+    .pw-tip  { font-size: 12px; color: #777; font-style: italic; line-height: 1.4; margin-bottom: 9px; border-left: 3px solid #EDE4DC; padding-left: 8px; }
     .pw-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
     .pw-tag  { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
     .t-day   { color: white; }
     .t-book  { background: #FFF0E0; color: #C15400; }
-    .t-opt   { background: #F0E8FF; color: #5E00CC; }
+    .t-booked{ background: #E8FFE8; color: #1B6B23; }
+    .t-opt   { background: #F0E8FF; color: #5400CC; }
     .pw-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-    .pw-btn  {
-      padding: 8px 11px; border-radius: 9px; font-size: 12px; font-weight: 700;
-      border: none; cursor: pointer; text-decoration: none;
-      display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
-      -webkit-tap-highlight-color: transparent;
-    }
+    .pw-btn  { padding: 8px 11px; border-radius: 9px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
     .btn-gm  { background: #4285F4; color: white; }
     .btn-dir { background: #0F9D58; color: white; }
 
-    /* ── ITINERARY ───────────────────────────────────────── */
+    /* ── TOAST ───────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: calc(var(--safe-bot) + 70px);
+      left: 50%; transform: translateX(-50%) translateY(20px);
+      background: rgba(44,24,16,.88); color: white;
+      font-size: 13px; font-weight: 600;
+      padding: 9px 16px; border-radius: 20px;
+      pointer-events: none; opacity: 0;
+      transition: opacity .3s, transform .3s;
+      z-index: 9999; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── SCROLL CONTAINER ─────────────────────────── */
     .scroll {
       flex: 1; overflow-y: auto; min-height: 0;
-      padding: 14px 13px calc(var(--safe-bot) + 14px);
+      padding: 13px 13px calc(var(--safe-bot) + 13px);
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
     }
     .scroll::-webkit-scrollbar { width: 3px; }
     .scroll::-webkit-scrollbar-thumb { background: #DDD; border-radius: 2px; }
 
-    .overview {
-      background: white; border-radius: 14px; padding: 14px 16px;
-      margin-bottom: 14px; box-shadow: 0 2px 10px rgba(44,24,16,.09);
+    /* ── SHARED CARD ─────────────────────────────── */
+    .card {
+      background: white; border-radius: 14px;
+      padding: 14px 16px; margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(44,24,16,.08);
     }
-    .overview h3 { font-size: 14px; font-weight: 800; margin-bottom: 10px; }
+    .card h3 { font-size: 14px; font-weight: 800; margin-bottom: 10px; }
+
+    /* ── ITINERARY ───────────────────────────────── */
     .ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .ov-item strong { display: block; font-size: 13px; color: var(--dark); }
     .ov-item span   { font-size: 12px; color: var(--muted); }
 
-    .book-card {
-      background: linear-gradient(135deg, #FFF0E0 0%, #FFF8F0 100%);
-      border: 1.5px solid #F0CEAD;
+    .alert-card {
       border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;
+      border: 1.5px solid;
     }
-    .book-card h3 { font-size: 13px; font-weight: 800; color: #B84E00; margin-bottom: 8px; }
-    .book-item { font-size: 12px; color: var(--dark); padding: 3px 0; display: flex; gap: 6px; }
+    .alert-card.warn  { background: #FFFBF0; border-color: #F5C842; }
+    .alert-card.book  { background: #FFF0E0; border-color: #F0CEAD; }
+    .alert-card h3 { font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+    .alert-card.warn h3 { color: #8B6000; }
+    .alert-card.book h3 { color: #B84E00; }
+    .alert-item { font-size: 12px; color: var(--dark); padding: 3px 0; display: flex; gap: 6px; }
 
-    .day-section {
-      border-radius: 14px; overflow: hidden;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 10px rgba(44,24,16,.09);
-    }
+    .day-section { border-radius: 14px; overflow: hidden; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(44,24,16,.09); }
     .day-header { padding: 13px 16px; color: white; }
     .day-header h2 { font-size: 16px; font-weight: 800; }
-    .day-header p  { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+    .day-header p  { font-size: 12px; opacity: .85; margin-top: 2px; }
     .day-stats { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-    .day-stats span {
-      background: rgba(255,255,255,0.2); padding: 3px 9px;
-      border-radius: 10px; font-size: 11px; font-weight: 700;
-    }
+    .day-stats span { background: rgba(255,255,255,.2); padding: 3px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; }
 
-    .transit {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 16px; background: #F9F7F5;
-      border-bottom: 1px solid #EEE9E4;
-      font-size: 12px; color: #999;
-    }
-    .transit-ic { font-size: 14px; }
+    .transit { display: flex; align-items: center; gap: 8px; padding: 7px 16px; background: #F9F7F5; border-bottom: 1px solid #EEE9E4; font-size: 12px; color: #999; }
 
-    .stop {
-      background: white; padding: 13px 16px;
-      border-bottom: 1px solid #F5F0EC;
-    }
+    .stop { background: white; padding: 13px 16px; border-bottom: 1px solid #F5F0EC; }
     .stop:last-child { border-bottom: none; }
     .stop-time { font-size: 11px; color: #AAA; font-weight: 700; letter-spacing: .3px; margin-bottom: 3px; }
     .stop-name { font-size: 15px; font-weight: 800; color: var(--dark); line-height: 1.2; }
-    .stop-desc {
-      font-size: 13px; color: #5A5A5A; margin-top: 5px; line-height: 1.5;
-      white-space: pre-line;
-    }
+    .stop-desc { font-size: 13px; color: #5A5A5A; margin-top: 5px; line-height: 1.5; white-space: pre-line; }
     .stop-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
     .badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 10px; }
-    .b-walk { background: #E8F5E9; color: #1B6B23; }
-    .b-book { background: #FFF0E0; color: #B84E00; }
-    .b-opt  { background: #F0E8FF; color: #5400CC; }
-    .b-rest { background: #FFE8EE; color: #AA1042; }
-    .b-taxi { background: #E8F0FF; color: #1A43B5; }
+    .b-walk   { background: #E8F5E9; color: #1B6B23; }
+    .b-book   { background: #FFF0E0; color: #B84E00; }
+    .b-booked { background: #E8FFE8; color: #1B6B23; }
+    .b-opt    { background: #F0E8FF; color: #5400CC; }
+    .b-rest   { background: #FFE8EE; color: #AA1042; }
+    .b-taxi   { background: #E8F0FF; color: #1A43B5; }
+    .b-warn   { background: #FFF4D0; color: #8B5E00; }
     .stop-acts { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-    .s-btn {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 8px 11px; border-radius: 9px; font-size: 12px; font-weight: 700;
-      text-decoration: none; border: none; cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+    .s-btn { display: inline-flex; align-items: center; gap: 4px; padding: 8px 11px; border-radius: 9px; font-size: 12px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+    /* ── TICKETS ─────────────────────────────────── */
+    .tkt-card {
+      border-radius: 16px; overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 14px rgba(44,24,16,.13);
+    }
+    .tkt-hdr {
+      padding: 14px 16px; color: white;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .tkt-emoji { font-size: 30px; line-height: 1; flex-shrink: 0; }
+
+    .tkt-hdr h2 { font-size: 16px; font-weight: 800; line-height: 1.2; }
+    .tkt-hdr p  { font-size: 12px; opacity: .85; margin-top: 2px; }
+    .tkt-body { background: white; padding: 14px 16px; }
+
+    /* tear line */
+    .tkt-tear {
+      height: 12px;
+      background: linear-gradient(to right, white 0%, white 100%);
+      position: relative; overflow: hidden;
+    }
+    .tkt-tear::before {
+      content: '';
+      display: block;
+      height: 24px;
+      background: radial-gradient(circle at 50% 0%, transparent 10px, white 10px);
+      background-size: 24px 24px;
+      background-position: center top;
+      margin-top: -12px;
     }
 
-    /* ── TIPS TAB ────────────────────────────────────────── */
-    .tips-scroll {
-      flex: 1; overflow-y: auto; min-height: 0;
-      padding: 14px 13px calc(var(--safe-bot) + 14px);
-      -webkit-overflow-scrolling: touch;
+    .tkt-time-block {
+      display: flex; align-items: baseline; gap: 6px;
+      margin-bottom: 12px;
     }
-    .tips-section {
-      background: white; border-radius: 14px; padding: 14px 16px;
-      margin-bottom: 14px; box-shadow: 0 2px 10px rgba(44,24,16,.09);
+    .tkt-time {
+      font-size: 30px; font-weight: 900; color: var(--dark);
+      letter-spacing: -1px; line-height: 1;
     }
-    .tips-section h3 {
-      font-size: 15px; font-weight: 800; color: var(--dark);
-      margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+    .tkt-time-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+    .tkt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .tkt-field strong { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    .tkt-field span { font-size: 13px; font-weight: 700; color: var(--dark); }
+
+    .tkt-refs {
+      background: #F5F0EC; border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 12px;
+      font-size: 11px; color: var(--muted); font-family: 'Courier New', monospace;
+      line-height: 1.8;
     }
-    .tip-row {
-      display: flex; gap: 10px; padding: 9px 0;
-      border-bottom: 1px solid #F5F0EC; align-items: flex-start;
+    .tkt-refs strong { color: var(--dark); font-weight: 700; }
+
+    .tkt-includes {
+      background: #EEF4FF; border: 1px solid #C0D4F5; border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 12px;
     }
+    .tkt-includes h4 { font-size: 12px; font-weight: 800; color: #1A3A7A; margin-bottom: 6px; }
+    .tkt-inc-item { font-size: 12px; color: #1A3A7A; padding: 2px 0; display: flex; gap: 6px; }
+
+    .tkt-warn {
+      background: #FFFBEC; border: 1px solid #F5D87A; border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 12px;
+    }
+    .tkt-warn h4 { font-size: 12px; font-weight: 800; color: #8B5E00; margin-bottom: 5px; }
+    .tkt-warn-item { font-size: 12px; color: #7A4E00; padding: 2px 0; display: flex; gap: 6px; line-height: 1.4; }
+
+    .tkt-alert {
+      background: #FFF0E0; border: 1.5px solid #F5B87A; border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 12px;
+      font-size: 12px; font-weight: 700; color: #B84E00;
+    }
+
+    .tkt-acts { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tkt-btn { display: inline-flex; align-items: center; gap: 4px; padding: 8px 12px; border-radius: 9px; font-size: 12px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; }
+
+    /* ── TIPS ────────────────────────────────────── */
+    .tips-section { background: white; border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 2px 10px rgba(44,24,16,.08); }
+    .tips-section h3 { font-size: 15px; font-weight: 800; color: var(--dark); margin-bottom: 12px; }
+    .tip-row { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid #F5F0EC; align-items: flex-start; }
     .tip-row:last-child { border-bottom: none; padding-bottom: 0; }
     .tip-icon { font-size: 20px; flex-shrink: 0; line-height: 1; margin-top: 1px; }
     .tip-body strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); }
-    .tip-body span   { font-size: 12px; color: var(--muted); line-height: 1.45; }
+    .tip-body span { font-size: 12px; color: var(--muted); line-height: 1.45; }
     .phrase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .phrase { font-size: 12px; color: var(--dark); }
-    .phrase em { color: var(--muted); display: block; font-style: italic; font-size: 11px; }
+    .phrase strong { display: block; font-size: 12px; color: var(--dark); }
+    .phrase em { display: block; font-style: italic; font-size: 11px; color: var(--muted); }
 
-    /* ── RESPONSIVE ──────────────────────────────────────── */
-    @media (min-width: 390px) { .header-text h1 { font-size: 22px; } }
-    @media (min-width: 768px) {
-      .header-text h1 { font-size: 26px; }
-      .tab { font-size: 15px; padding: 14px; }
-    }
+    /* ── LEAFLET MARKER ─────────────────────────── */
+    .cm { display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2.5px solid white; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
 
-    /* leaflet marker */
-    .cm {
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; border: 2.5px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,.30);
-    }
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (min-width: 390px) { .header-text h1 { font-size: 21px; } .tab { font-size: 13px; } }
+    @media (min-width: 768px) { .header-text h1 { font-size: 26px; } .tab { font-size: 15px; padding: 14px; } }
   </style>
 </head>
 <body>
@@ -308,393 +322,438 @@
 <div class="tabs">
   <div class="tab active" id="tab-map-btn"  onclick="switchTab('map')">🗺️ Map</div>
   <div class="tab"        id="tab-itin-btn" onclick="switchTab('itin')">📅 Itinerary</div>
+  <div class="tab"        id="tab-tkt-btn"  onclick="switchTab('tkt')">🎫 Tickets</div>
   <div class="tab"        id="tab-tips-btn" onclick="switchTab('tips')">💡 Tips</div>
 </div>
 
 <div class="content">
-
-  <!-- MAP -->
   <div class="pane active" id="pane-map">
     <div class="map-controls" id="mapControls"></div>
     <div id="map"></div>
   </div>
-
-  <!-- ITINERARY -->
-  <div class="pane" id="pane-itin">
-    <div class="scroll" id="itinerary"></div>
-  </div>
-
-  <!-- TIPS -->
-  <div class="pane" id="pane-tips">
-    <div class="tips-scroll" id="tips"></div>
-  </div>
-
+  <div class="pane" id="pane-itin"><div class="scroll" id="itinerary"></div></div>
+  <div class="pane" id="pane-tkt"><div class="scroll" id="tickets"></div></div>
+  <div class="pane" id="pane-tips"><div class="scroll" id="tips"></div></div>
 </div>
 
 <div id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════════
-   COLOURS & CONSTANTS
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════════════════════ */
 const C = { hotel:'#C44B2E', fri:'#E8834A', sat:'#7C3AED', sun:'#0EA05E', ch:'#E91E8C' };
-const HOTEL = { lat:43.76945, lng:11.25193,
-  name:'Hotel Berchielli',
+const HOTEL = { lat:43.76945, lng:11.25193, name:'Hotel Berchielli',
   desc:'Your home base — right on the Arno, steps from Ponte Vecchio.',
-  mapsUrl:'https://maps.google.com/?q=Hotel+Berchielli+Lungarno+Acciaiuoli+Florence',
-};
+  mapsUrl:'https://maps.google.com/?q=Hotel+Berchielli+Lungarno+Acciaiuoli+Florence' };
 
-/* ═══════════════════════════════════════════════════════════
-   LOCATIONS
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   TICKET DATA  (from PDFs)
+═══════════════════════════════════════════════════════ */
+const TICKETS = [
+  {
+    id:'accademia', icon:'🗿', color:'#1A3A7A',
+    name:'Galleria dell\'Accademia',
+    subtitle:'Statue of David · Saturday 21 Feb 2026',
+    time:'08:45', timeRange:'08:45 – 09:00',
+    people:['Luis Nunez'],
+    order:'22111728', amount:'€24.00',
+    refs:[{l:'Order / ID',v:'22111728 · ID 67'},{l:'Customer',v:'Luis Nunez Clavijo'}],
+    includes:null,
+    warnings:[
+      '🎒 Small bags only — max 40×30×18cm. No cloakroom.',
+      '🔍 Metal detector security check at entry.',
+      '📱 Show ticket on phone screen at access control.',
+    ],
+    alert:'⚠️ Only 1 Accademia ticket in files (Luis). Verify Carla\'s ticket!',
+    mapsUrl:'https://maps.google.com/?q=Galleria+Accademia+Via+Ricasoli+Florence',
+    lat:43.77672, lng:11.25815,
+  },
+  {
+    id:'giotto', icon:'🔔', color:'#7C3000',
+    name:'Giotto Pass × 2 Adults',
+    subtitle:'Campanile · Baptistery · Museo · Santa Reparata',
+    time:'11:15', timeRange:'Campanile entry 11:15 SHARP',
+    people:['Luis Nunez', 'Carla Montero'],
+    order:'87-YUSCLCE', amount:'€40.00 (€20 × 2)',
+    refs:[
+      {l:'Confirmation', v:'SPUVTARA79KK'},
+      {l:'Booking #1',   v:'87-EKIK4JM'},
+      {l:'Booking #2',   v:'87-CGYRRZO'},
+      {l:'Ticket #1',    v:'12-2421-63-1927280297'},
+      {l:'Ticket #2',    v:'12-2421-63-1927280298'},
+    ],
+    includes:[
+      '🔔 Campanile (Bell Tower) — 414 steps, no lift',
+      '⛪ Battistero (Baptistery) — enter from North door',
+      '🏛️ Museo dell\'Opera del Duomo — Piazza del Duomo 9',
+      '⛪ Santa Reparata — via Campanile door of Cathedral',
+    ],
+    warnings:[
+      '⛔ NO BACKPACKS — mandatory. Leave at hotel or Deposito Bagagli at Duomo complex.',
+      '⏰ Campanile slot at 11:15 is FIXED and cannot be changed. Arrive 10 min early.',
+      '🔧 Baptistery note: vault mosaics currently under restoration (not visible).',
+      '📅 Pass valid Sat 21 – Mon 23 Feb (3 days) — use Baptistery/Museo any day.',
+    ],
+    alert:null,
+    mapsUrl:'https://maps.google.com/?q=Campanile+di+Giotto+Piazza+del+Duomo+Florence',
+    lat:43.77299, lng:11.25581,
+  },
+  {
+    id:'uffizi', icon:'🖼️', color:'#1B5E20',
+    name:'Le Gallerie degli Uffizi × 2',
+    subtitle:'Botticelli · da Vinci · Raphael · Michelangelo',
+    time:'09:00', timeRange:'Entry from 09:00 · Sunday 22 Feb 2026',
+    people:['Luis Nunez', 'Carla Montero'],
+    order:'S22WTAG2', amount:'€58.00 (€29 × 2)',
+    refs:[{l:'PNR',v:'S22WTAG2'},{l:'Issued',v:'19-02-2026'}],
+    includes:null,
+    warnings:[
+      '📱 Show ticket on phone or print — present at access control.',
+      '📷 Photography without flash is allowed inside.',
+    ],
+    alert:null,
+    mapsUrl:'https://maps.google.com/?q=Uffizi+Galleries+Piazzale+degli+Uffizi+Florence',
+    lat:43.76787, lng:11.25535,
+  },
+];
+
+/* ═══════════════════════════════════════════════════════
+   MAP LOCATIONS
+═══════════════════════════════════════════════════════ */
 const LOCS = [
   // FRIDAY
-  { id:'smn-farm', name:'Farmaceutica di S.M. Novella', icon:'🌿', day:'fri', lat:43.77445, lng:11.24969,
-    desc:'The world\'s oldest pharmacy (1221) inside a frescoed chapel. Perfumes, soaps, herbal remedies — utterly unique.',
-    tip:'Mon–Sat 9am–8pm, Sun 10am–6pm. Even if you don\'t buy, the chapel interior is stunning.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Officina+Profumo+Farmaceutica+Santa+Maria+Novella+Florence' },
+  { id:'smn-farm',       name:'Farmaceutica di S.M. Novella',         icon:'🌿', day:'fri', lat:43.77445, lng:11.24969,
+    desc:'The world\'s oldest pharmacy (1221) inside a frescoed chapel. Divine perfumes and potions.',
+    tip:'Mon–Sat 9am–8pm, Sun 10am–6pm.',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Officina+Profumo+Farmaceutica+Santa+Maria+Novella+Florence' },
 
-  { id:'basilica-novella', name:'Basilica di Santa Maria Novella', icon:'⛪', day:'fri', lat:43.77452, lng:11.24901,
-    desc:'Gothic marble masterpiece. Masaccio\'s Trinity fresco and Ghirlandaio\'s Tornabuoni chapel inside.',
+  { id:'basilica-novella', name:'Basilica di Santa Maria Novella',    icon:'⛪', day:'fri', lat:43.77452, lng:11.24901,
+    desc:'Gothic marble masterpiece. Masaccio\'s Trinity fresco inside changed the history of painting.',
     tip:'Entry €7.50. Mon–Thu, Sat 9am–7pm; Fri & Sun 1–7pm.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Basilica+Santa+Maria+Novella+Florence' },
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Basilica+Santa+Maria+Novella+Florence' },
 
-  { id:'mercato-centrale', name:'Mercato Centrale', icon:'🛒', day:'fri', lat:43.77616, lng:11.25381,
-    desc:'Iconic iron-and-glass market. Ground floor: fresh produce, meats, lampredotto. Upstairs food court from 10am.',
-    tip:'Try lampredotto (Florentine tripe sandwich) — the most authentic street food in the city.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Mercato+Centrale+Florence' },
+  { id:'mercato-centrale', name:'Mercato Centrale',                    icon:'🛒', day:'fri', lat:43.77616, lng:11.25381,
+    desc:'Iconic iron-and-glass market. Ground floor: produce, meats, lampredotto. Upstairs food court from 10am.',
+    tip:'Try lampredotto (tripe sandwich) — the most authentic Florentine street food.',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Mercato+Centrale+Florence' },
 
-  { id:'duomo', name:'Duomo – Santa Maria del Fiore', icon:'🏛️', day:'fri', lat:43.77308, lng:11.25600,
-    desc:'Brunelleschi\'s dome — one of history\'s greatest engineering feats. Dominates the skyline from everywhere.',
-    tip:'Exterior free. Dome climb + Campanile + Baptistery = €30 combo. Book at operaduomo.firenze.it — sells out!',
-    book:true, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Cattedrale+di+Santa+Maria+del+Fiore+Florence' },
+  { id:'duomo',           name:'Duomo – Santa Maria del Fiore',        icon:'🏛️', day:'fri', lat:43.77308, lng:11.25600,
+    desc:'Brunelleschi\'s dome dominates Florence\'s skyline. The exterior + free interior is stunning. Campanile climb is Saturday (ticketed).',
+    tip:'Cathedral free Mon–Sat 10:15–15:45, closed Sundays. Dress code: no bare shoulders/legs. Your Giotto Pass (Campanile) is Saturday at 11:15.',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Cattedrale+di+Santa+Maria+del+Fiore+Florence' },
 
-  { id:'campanile', name:'Giotto\'s Campanile', icon:'🔔', day:'fri', lat:43.77299, lng:11.25581,
-    desc:'414 steps to panoramic views — arguably better than the dome since you see the dome itself from here.',
-    tip:'Part of €30 Duomo combo. No lift, all stairs. Go early to avoid queues.',
-    book:true, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Campanile+di+Giotto+Florence' },
+  { id:'baptistery',     name:'Baptistery of San Giovanni',             icon:'🚪', day:'sat', lat:43.77336, lng:11.25516,
+    desc:'Ghiberti\'s "Gates of Paradise" bronze doors are one of the supreme works of the Renaissance. On your Giotto Pass.',
+    tip:'Included in Giotto Pass. Enter from North door. Note: vault mosaics currently under restoration.',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Battistero+di+San+Giovanni+Florence' },
 
-  { id:'baptistery', name:'Baptistery of San Giovanni', icon:'🚪', day:'fri', lat:43.77336, lng:11.25516,
-    desc:'Ghiberti\'s golden "Gates of Paradise" bronze doors are one of the supreme works of the Renaissance.',
-    tip:'Part of €30 Duomo combo.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Battistero+di+San+Giovanni+Florence' },
+  { id:'campanile',      name:'Giotto\'s Campanile ✅ BOOKED',          icon:'🔔', day:'sat', lat:43.77299, lng:11.25581,
+    desc:'BOOKED Saturday 21 Feb at 11:15. 414 steps to the best panoramic view in Florence — you can see the dome itself from here.',
+    tip:'⛔ NO BACKPACKS. Arrive 10 min before your 11:15 slot. 414 steps, no lift. Your Giotto Pass covers this + Baptistery + Museo.',
+    book:true, opt:false, mapsUrl:'https://maps.google.com/?q=Campanile+di+Giotto+Florence' },
 
-  { id:'signoria', name:'Piazza della Signoria & Neptune', icon:'🏟️', day:'fri', lat:43.76979, lng:11.25592,
-    desc:'Florence\'s open-air sculpture museum — free. Neptune Fountain, David copy, Perseus by Cellini in the Loggia.',
-    tip:'100% free to wander. The Loggia dei Lanzi sculptures are world-class and entirely unguarded.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Piazza+della+Signoria+Florence' },
+  { id:'signoria',       name:'Piazza della Signoria & Neptune',        icon:'🏟️', day:'fri', lat:43.76979, lng:11.25592,
+    desc:'Florence\'s grand civic square — free open-air museum. Neptune Fountain, David copy, Perseus by Cellini, Palazzo Vecchio.',
+    tip:'Completely free. The Loggia dei Lanzi sculptures are world-class.',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Piazza+della+Signoria+Florence' },
 
-  { id:'palazzo-vecchio', name:'Palazzo Vecchio', icon:'🏰', day:'fri', lat:43.76956, lng:11.25598,
-    desc:'Medieval fortress-palace serving as Florence\'s town hall since 1299. Stunning frescoed halls inside.',
-    tip:'Entry €12.50. Just peeking at the courtyard is free and worth it.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Palazzo+Vecchio+Florence' },
+  { id:'palazzo-vecchio', name:'Palazzo Vecchio',                      icon:'🏰', day:'fri', lat:43.76956, lng:11.25598,
+    desc:'Medieval fortress-palace, Florence\'s town hall since 1299. Frescoed halls inside.',
+    tip:'Entry €12.50. Courtyard peek is free.',
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Palazzo+Vecchio+Florence' },
 
-  { id:'vinaio', name:'All\'Antico Vinaio', icon:'🥪', day:'fri', lat:43.76862, lng:11.25548,
-    desc:'Florence\'s most famous sandwich shop. Enormous schiacciata stuffed with Tuscan meats and cheeses.',
-    tip:'Via dei Neri 74/76. Arrive before noon — queues grow fast! Worth every minute.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=All+Antico+Vinaio+Via+dei+Neri+Florence' },
+  { id:'vinaio',         name:'All\'Antico Vinaio',                     icon:'🥪', day:'fri', lat:43.76862, lng:11.25548,
+    desc:'Florence\'s most famous sandwich shop — giant schiacciata with Tuscan meats and cheeses.',
+    tip:'Via dei Neri 74/76. Arrive before noon. Worth every minute of the queue!',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=All+Antico+Vinaio+Via+dei+Neri+Florence' },
 
-  { id:'uffizi', name:'Uffizi Galleries', icon:'🖼️', day:'fri', lat:43.76787, lng:11.25535,
-    desc:'Botticelli\'s Birth of Venus & Primavera, da Vinci, Raphael, Michelangelo. One of the world\'s greatest museums.',
-    tip:'Book well in advance at uffizi.it (€20–25). Opens 8:15am, closed Mon. Allow 2–3 hours.',
-    book:true, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Uffizi+Galleries+Florence' },
+  { id:'uffizi',         name:'Uffizi Galleries ✅ BOOKED',              icon:'🖼️', day:'sun', lat:43.76787, lng:11.25535,
+    desc:'BOOKED Sunday 22 Feb at 09:00. Botticelli\'s Birth of Venus & Primavera, da Vinci, Raphael, Michelangelo.',
+    tip:'PNR: S22WTAG2. Show ticket on phone. Opens 9am. Allow 2–2.5 hours.',
+    book:true, opt:false, mapsUrl:'https://maps.google.com/?q=Uffizi+Galleries+Florence' },
 
-  { id:'ponte-vecchio', name:'Ponte Vecchio', icon:'🌉', day:'fri', lat:43.76803, lng:11.25312,
+  { id:'ponte-vecchio',  name:'Ponte Vecchio',                          icon:'🌉', day:'fri', lat:43.76803, lng:11.25312,
     desc:'Medieval bridge lined with jewellers since the 13th century. Magical Arno views at golden hour.',
     tip:'Free to cross. Walk to the middle for the best views both up and downstream.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Ponte+Vecchio+Florence' },
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Ponte+Vecchio+Florence' },
 
-  { id:'zaza', name:'Trattoria Zà Zà ✅', icon:'🍽️', day:'fri', lat:43.77659, lng:11.25431,
-    desc:'BOOKED at 19:30. Classic Florentine trattoria. Ribollita, pappardelle al cinghiale, bistecca.',
-    tip:'Reservation confirmed 19:30. ~15 min walk from hotel through the historic centre.',
-    book:true, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Trattoria+Za+Za+Piazza+del+Mercato+Centrale+Florence' },
+  { id:'zaza',           name:'Trattoria Zà Zà ✅',                     icon:'🍽️', day:'fri', lat:43.77659, lng:11.25431,
+    desc:'BOOKED Friday at 19:30. Classic Florentine trattoria. Ribollita, pappardelle al cinghiale, bistecca alla Fiorentina.',
+    tip:'✅ Reservation 19:30. ~15 min walk from hotel.',
+    book:true, opt:false, mapsUrl:'https://maps.google.com/?q=Trattoria+Za+Za+Piazza+del+Mercato+Centrale+Florence' },
 
   // SATURDAY
-  { id:'accademia', name:'Galleria dell\'Accademia – David', icon:'🗿', day:'sat', lat:43.77672, lng:11.25815,
-    desc:'Michelangelo\'s David (1501–1504) — 5.17m of perfect Carrara marble. One of the greatest artworks ever made.',
-    tip:'Book in advance at galleriaaccademiafirenze.it (€12–20). Opens 8:15am. Go early. Allow 1.5 hrs.',
-    book:true, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Galleria+dell+Accademia+Florence' },
+  { id:'accademia',      name:'Galleria dell\'Accademia ✅ BOOKED',      icon:'🗿', day:'sat', lat:43.77672, lng:11.25815,
+    desc:'BOOKED Saturday 21 Feb at 08:45. Michelangelo\'s David — 5.17m of Carrara marble perfection.',
+    tip:'Order 22111728. Show on phone. Bags max 40×30×18cm only. Metal detector at entry.',
+    book:true, opt:false, mapsUrl:'https://maps.google.com/?q=Galleria+Accademia+Via+Ricasoli+Florence' },
 
-  { id:'cappelle-med', name:'Cappelle Medicee', icon:'⚰️', day:'sat', lat:43.77541, lng:11.25275,
-    desc:'The Medici mausoleum — Michelangelo\'s Night, Day, Dawn & Dusk sculpted for the family tombs.',
-    tip:'Entry €9. Closed 1st/3rd/5th Sun and 2nd/4th Mon. Worth 45 min.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Cappelle+Medicee+Florence' },
+  { id:'duomo-museo',    name:'Museo dell\'Opera del Duomo',             icon:'🏛️', day:'sat', lat:43.77350, lng:11.25630,
+    desc:'Houses Michelangelo\'s Pietà Bandini and Ghiberti\'s original Gates of Paradise panels. On your Giotto Pass.',
+    tip:'Piazza del Duomo 9. Included in Giotto Pass. Can be visited any day 21–23 Feb.',
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Museo+Opera+del+Duomo+Florence' },
 
-  { id:'pitti', name:'Palazzo Pitti', icon:'👑', day:'sat', lat:43.76511, lng:11.24976,
-    desc:'Enormous Medici palace. The Palatine Gallery holds Raphael, Titian, and Rubens.',
-    tip:'Combo with Boboli Gardens €16. Palatine Gallery is the highlight. Allow 1.5 hrs.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Palazzo+Pitti+Florence' },
+  { id:'pitti',          name:'Palazzo Pitti',                           icon:'👑', day:'sat', lat:43.76511, lng:11.24976,
+    desc:'Enormous Medici palace with the Palatine Gallery — Raphael, Titian, Rubens. Boboli Gardens behind.',
+    tip:'Boboli only €8, Pitti + Boboli combo €16. Saturdays can be busy — go for gardens if tired from morning.',
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Palazzo+Pitti+Florence' },
 
-  { id:'boboli', name:'Boboli Gardens', icon:'🌿', day:'sat', lat:43.76295, lng:11.25087,
-    desc:'Renaissance gardens behind Pitti — fountains, grottos, cypress alleys, and panoramic views.',
-    tip:'Included with Pitti combo (€16). Exit from the top for views toward Piazzale Michelangelo.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Boboli+Gardens+Florence' },
+  { id:'boboli',         name:'Boboli Gardens',                          icon:'🌿', day:'sat', lat:43.76295, lng:11.25087,
+    desc:'Renaissance gardens behind Pitti — fountains, grottos, cypress alleys, city views.',
+    tip:'€8 entry (or €16 Pitti combo). A peaceful escape after a busy morning of museums.',
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Boboli+Gardens+Florence' },
 
-  { id:'santo-spirito', name:'Piazza Santo Spirito', icon:'⛪', day:'sat', lat:43.76541, lng:11.24806,
-    desc:'The most laid-back square in Florence. Sunday antique market, great cafes and local restaurants all around.',
-    tip:'Sunday market 9am–7pm (seasonal — confirm locally). Basilica has a Michelangelo crucifix.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Piazza+Santo+Spirito+Florence' },
+  { id:'santo-spirito',  name:'Piazza Santo Spirito',                    icon:'⛪', day:'sat', lat:43.76541, lng:11.24806,
+    desc:'The most laid-back square in Florence. Local cafes, osterie, and a Sunday antique market.',
+    tip:'Sunday market 9am–7pm (seasonal). The basilica has a Michelangelo crucifix.',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Piazza+Santo+Spirito+Florence' },
 
-  { id:'babae', name:'Babae – Buchette del Vino', icon:'🍷', day:'sat', lat:43.76690, lng:11.24985,
-    desc:'Order wine through a 400-year-old stone hatch (buchetta del vino). A uniquely Florentine tradition revived.',
-    tip:'Via Santa Monaca 7r. Open afternoon onwards. Get a Chianti through the little door!',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Babae+Via+Santa+Monaca+Florence' },
+  { id:'babae',          name:'Babae – Buchette del Vino',               icon:'🍷', day:'sat', lat:43.76690, lng:11.24985,
+    desc:'Order wine through a 400-year-old stone hatch in the wall — a uniquely Florentine tradition.',
+    tip:'Via Santa Monaca 7r. Open afternoons. Get a Chianti through the little door!',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Babae+Via+Santa+Monaca+Florence' },
 
-  { id:'brancacci', name:'Cappella Brancacci', icon:'🎨', day:'sat', lat:43.76594, lng:11.24551,
+  { id:'brancacci',      name:'Cappella Brancacci',                      icon:'🎨', day:'sat', lat:43.76594, lng:11.24551,
     desc:'"Sistine Chapel of the Early Renaissance" — Masaccio\'s frescoes that changed Western art.',
-    tip:'Book ahead (€10, limited 30 visitors at a time). Mon, Wed–Sat 10am–5pm, Sun 1–5pm.',
-    book:true, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Cappella+Brancacci+Florence' },
+    tip:'Book ahead (€10, only 30 visitors at a time). Mon, Wed–Sat 10am–5pm, Sun 1–5pm.',
+    book:true, opt:true, mapsUrl:'https://maps.google.com/?q=Cappella+Brancacci+Florence' },
 
-  { id:'piazzale', name:'Piazzale Michelangelo', icon:'🌅', day:'sat', lat:43.76281, lng:11.26520,
-    desc:'The definitive panoramic view of Florence — entire cityscape with Duomo, Campanile, Palazzo Vecchio.',
-    tip:'Feb sunset ~17:45. Walk up from Oltrarno (~20 min steep) or Bus 13. Arrive 30 min early.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Piazzale+Michelangelo+Florence' },
+  { id:'piazzale',       name:'Piazzale Michelangelo',                   icon:'🌅', day:'sat', lat:43.76281, lng:11.26520,
+    desc:'The definitive panoramic view of Florence. February sunset ~17:45 — arrive 30 min early for a good spot.',
+    tip:'Walk up from Oltrarno ~20 min (steep), or Bus 13. Completely free.',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Piazzale+Michelangelo+Florence' },
 
-  { id:'san-miniato', name:'Basilica di San Miniato al Monte', icon:'🕍', day:'sat', lat:43.75742, lng:11.26572,
+  { id:'san-miniato',   name:'Basilica di San Miniato al Monte',         icon:'🕍', day:'sat', lat:43.75742, lng:11.26572,
     desc:'Beautiful Romanesque church above Piazzale Michelangelo. Monks sing Vespers at 5:30pm.',
-    tip:'Free entry. 5 min walk uphill from Piazzale. Vespers (5:30pm) is hauntingly beautiful.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Basilica+San+Miniato+al+Monte+Florence' },
+    tip:'Free entry. 5 min uphill from Piazzale. Vespers (5:30pm) is hauntingly beautiful.',
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Basilica+San+Miniato+al+Monte+Florence' },
 
-  { id:'reggia', name:'La Reggia degli Etruschi ✅', icon:'🍽️', day:'sat', lat:43.8022, lng:11.2982,
-    desc:'BOOKED at 19:30. Dinner in the hills of Fiesole — panoramic views over Florence. Magical setting.',
+  { id:'reggia',         name:'La Reggia degli Etruschi ✅',              icon:'🍽️', day:'sat', lat:43.8022, lng:11.2982,
+    desc:'BOOKED Saturday at 19:30. Dinner in the hills of Fiesole with panoramic views over all of Florence.',
     tip:'Taxi from Piazzale Michelangelo ~15 min (~€20–25). Return taxi ~€25–30.',
-    book:true, opt:false,
-    mapsUrl:'https://maps.app.goo.gl/pfFNhVKDHgZfW9hn7' },
+    book:true, opt:false, mapsUrl:'https://maps.app.goo.gl/pfFNhVKDHgZfW9hn7' },
 
   // SUNDAY
-  { id:'piazza-rep', name:'Piazza della Repubblica', icon:'☕', day:'sun', lat:43.77160, lng:11.25385,
-    desc:'Grand 19th-century square. Historic Caffè Gilli (since 1733), vintage carousel, triumphal arch.',
-    tip:'A coffee at Gilli is pricey but worth it on your last morning. Stand at the bar!',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Piazza+della+Repubblica+Florence' },
+  { id:'piazza-rep',     name:'Piazza della Repubblica',                  icon:'☕', day:'sun', lat:43.77160, lng:11.25385,
+    desc:'Grand 19th-century square. Historic Caffè Gilli (since 1733), vintage carousel.',
+    tip:'A coffee at Gilli is a treat. Stand at the bar for the authentic (and cheaper) experience.',
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Piazza+della+Repubblica+Florence' },
 
-  { id:'vivoli', name:'Vivoli – Gelato dal 1929', icon:'🍦', day:'sun', lat:43.76938, lng:11.25973,
-    desc:'Florence\'s oldest gelateria. Famous creamy gelato — no cones, only cups. Order an affogato!',
+  { id:'vivoli',         name:'Vivoli – Gelato dal 1929',                 icon:'🍦', day:'sun', lat:43.76938, lng:11.25973,
+    desc:'Florence\'s oldest gelateria. No cones — only cups! The perfect farewell affogato.',
     tip:'Via dell\'Isola delle Stinche 7. Closed Mon. Try rice, coffee, or chocolate.',
-    book:false, opt:false,
-    mapsUrl:'https://maps.google.com/?q=Vivoli+Gelateria+Florence' },
+    book:false, opt:false, mapsUrl:'https://maps.google.com/?q=Vivoli+Gelateria+Florence' },
 
-  { id:'odeon', name:'Odeon Cinema', icon:'🎬', day:'sun', lat:43.77280, lng:11.25150,
+  { id:'odeon',          name:'Odeon Cinema',                             icon:'🎬', day:'sun', lat:43.77280, lng:11.25150,
     desc:'1920s Art Deco cinema inside a historic palazzo. Screens original-version English films.',
-    tip:'Worth visiting just for the architecture. Check odeon.it for their OV programme.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Odeon+Cinema+Florence' },
+    tip:'Worth a look for the extraordinary interior architecture.',
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Odeon+Cinema+Florence' },
 
-  // FOOD (any day, shown on map)
-  { id:'vinaio2', name:'L\'Girone de\' Ghiotti', icon:'🥪', day:'fri', lat:43.77350, lng:11.25720,
-    desc:'Casual Florentine sandwiches and crostini — great for a quick local lunch near the Duomo.',
-    tip:'Simple and authentic. Great crostini misti and house wine.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Il+Girone+dei+Ghiotti+Florence' },
-
-  { id:'retrobottega', name:'Retrobottega', icon:'🥪', day:'fri', lat:43.76998, lng:11.25295,
-    desc:'Creative modern Tuscan sandwiches — a cut above the usual panino. Near the hotel.',
-    tip:'Small spot, can get busy at lunch.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Retrobottega+Florence' },
-
-  { id:'panino-chianti', name:'Il Panino del Chianti', icon:'🥪', day:'fri', lat:43.76900, lng:11.25420,
+  // FOOD
+  { id:'vinaio2',        name:'L\'Girone de\' Ghiotti',                   icon:'🥪', day:'fri', lat:43.77350, lng:11.25720,
+    desc:'Casual Florentine sandwiches and crostini — great local lunch near the Duomo.',
+    tip:'Simple and authentic. Great crostini misti.',
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Il+Girone+dei+Ghiotti+Florence' },
+  { id:'retrobottega',   name:'Retrobottega',                              icon:'🥪', day:'fri', lat:43.76998, lng:11.25295,
+    desc:'Creative modern Tuscan sandwiches near the hotel.',
+    tip:'Small spot, great for a quick creative lunch.',
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Retrobottega+Florence' },
+  { id:'panino-chianti', name:'Il Panino del Chianti',                     icon:'🥪', day:'fri', lat:43.76900, lng:11.25420,
     desc:'Excellent Chianti-region sandwiches near the Uffizi area.',
     tip:'Casual and quick. Pair with a glass of Chianti.',
-    book:false, opt:true,
-    mapsUrl:'https://maps.google.com/?q=Il+Panino+del+Chianti+Florence' },
+    book:false, opt:true, mapsUrl:'https://maps.google.com/?q=Il+Panino+del+Chianti+Florence' },
 ];
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    CHRISTINA'S PICKS
-═══════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════ */
 const CHRIS = [
-  { id:'c01', name:'La Gelatiera',           lat:43.76892, lng:11.25100, type:'Ice Cream',          rating:'4.8⭐', desc:'Top-rated artisanal gelato — Christina\'s absolute favourite.',                                              url:'https://maps.google.com/?q=La+Gelatiera+Florence' },
-  { id:'c02', name:'Braceria All\'11',        lat:43.77230, lng:11.24900, type:'Restaurant',          rating:'4.8⭐', desc:'Excellent meat restaurant — great for a proper Florentine dinner.',                                         url:'https://maps.google.com/?q=Braceria+All+11+Florence' },
-  { id:'c03', name:'Osteria Belguardo',       lat:43.76800, lng:11.24600, type:'Italian',             rating:'4.5⭐', desc:'Lovely Oltrarno osteria — warm, local, great value.',                                                       url:'https://maps.google.com/?q=Osteria+Belguardo+Florence' },
-  { id:'c04', name:'il Pacchero – pizza',     lat:43.77556, lng:11.26100, type:'Pizza €20–30',        rating:'4.6⭐', desc:'Great pizza spot a little further from the tourist crowd.',                                                 url:'https://maps.google.com/?q=il+Pacchero+Florence' },
-  { id:'c05', name:'Le Barrique',             lat:43.77100, lng:11.25300, type:'Italian Wine Bar',    rating:'4.2⭐', desc:'Cosy wine bar with small plates and great atmosphere.',                                                    url:'https://maps.google.com/?q=Le+Barrique+Florence' },
-  { id:'c06', name:'Trattoria Giovanni',      lat:43.77440, lng:11.25460, type:'Restaurant €20–30',   rating:'4.8⭐', desc:'One of Florence\'s most beloved trattorias — incredibly highly rated by locals.',                          url:'https://maps.google.com/?q=Trattoria+Giovanni+Florence' },
-  { id:'c07', name:'Madova Gloves',           lat:43.76800, lng:11.24950, type:'Leather Goods',       rating:'4.7⭐', desc:'Famous leather glove maker since 1919 — crafted to your hand size. Unique Florentine souvenir.',           url:'https://maps.google.com/?q=Madova+Florence' },
-  { id:'c08', name:'Trattoria Mario',         lat:43.77600, lng:11.25430, type:'Tuscan €20–30',       rating:'4.6⭐', desc:'Legendary workers\' trattoria near Mercato Centrale. Communal tables — arrive before noon!',                url:'https://maps.google.com/?q=Trattoria+Mario+Florence' },
-  { id:'c09', name:'Da\' Vinattieri',          lat:43.76840, lng:11.25700, type:'Lampredotto €1–10',   rating:'4.7⭐', desc:'Tiny spot for lampredotto (Florentine tripe sandwich). The most authentic street food in the city.',       url:'https://maps.google.com/?q=Da+Vinattieri+Florence' },
-  { id:'c10', name:'Trattoria Dall\'Oste',    lat:43.77380, lng:11.25660, type:'Steak ££',            rating:'4.7⭐', desc:'Famous for bistecca alla Fiorentina. Bring an appetite.',                                                  url:'https://maps.google.com/?q=Trattoria+Dall+Oste+Florence' },
-  { id:'c11', name:'La Giostra',              lat:43.76980, lng:11.26100, type:'Italian £££',         rating:'4.3⭐', desc:'Charming restaurant run by a descendant of the Medici family. Worth the splurge.',                        url:'https://maps.google.com/?q=La+Giostra+Florence' },
-  { id:'c12', name:'Trattoria La Casalinga',  lat:43.76550, lng:11.24700, type:'Tuscan €20–30',       rating:'4.5⭐', desc:'Old-school Oltrarno trattoria — great value, deeply authentic. Get there early.',                          url:'https://maps.google.com/?q=Trattoria+La+Casalinga+Florence' },
-  { id:'c13', name:'Gustapizza',              lat:43.76610, lng:11.24680, type:'Pizza €10–20',        rating:'4.5⭐', desc:'Beloved Oltrarno pizza — tiny spot with a queue outside. Worth it.',                                      url:'https://maps.google.com/?q=Gustapizza+Florence' },
-  { id:'c14', name:'Gelateria dei Neri',      lat:43.76800, lng:11.25650, type:'Ice Cream ££',        rating:'4.7⭐', desc:'Excellent gelato near Santa Croce — never disappoints.',                                                   url:'https://maps.google.com/?q=Gelateria+dei+Neri+Florence' },
-  { id:'c15', name:'La Strega Nocciola',      lat:43.76820, lng:11.25230, type:'Ice Cream ££',        rating:'4.7⭐', desc:'Artisanal gelato near Ponte Vecchio. The hazelnut is exceptional.',                                       url:'https://maps.google.com/?q=La+Strega+Nocciola+Ponte+Vecchio+Florence' },
-  { id:'c16', name:'Gelateria La Carraia',    lat:43.76760, lng:11.25000, type:'Ice Cream €',         rating:'4.7⭐', desc:'Beloved gelateria near Ponte alla Carraia — incredible quality and value.',                               url:'https://maps.google.com/?q=Gelateria+La+Carraia+Florence' },
-  { id:'c17', name:'La Cité',                 lat:43.76600, lng:11.24650, type:'Bistro/Books £',      rating:'4.5⭐', desc:'Charming bookshop bistro in Oltrarno — great coffee and laid-back atmosphere.',                           url:'https://maps.google.com/?q=La+Cite+Florence' },
-  { id:'c18', name:'Rooster Cafe',            lat:43.77600, lng:11.25000, type:'Brunch €10–20',       rating:'4.8⭐', desc:'Top-rated brunch spot. Perfect for a relaxed Saturday morning start.',                                    url:'https://maps.google.com/?q=Rooster+Cafe+Firenze' },
-  { id:'c19', name:'Trattoria I\'raddi',      lat:43.76580, lng:11.24780, type:'Restaurant €20–30',   rating:'4.5⭐', desc:'Local favourite in Oltrarno. Homestyle Tuscan cooking, incredibly friendly.',                             url:'https://maps.google.com/?q=Trattoria+Iraddi+Florence' },
-  { id:'c20', name:'La Ménagère',             lat:43.77140, lng:11.25280, type:'Restaurant/Bar ££',   rating:'4.2⭐', desc:'Beautiful restaurant and lifestyle concept store. Great for aperitivo.',                                 url:'https://maps.google.com/?q=La+Menagere+Florence' },
-  { id:'c21', name:'La Fettunta',             lat:43.76610, lng:11.24750, type:'Tuscan €10–30',       rating:'4.7⭐', desc:'Excellent Tuscan food in Oltrarno — unpretentious and deeply satisfying.',                               url:'https://maps.google.com/?q=La+Fettunta+Florence' },
-  { id:'c22', name:'Osteria Santo Spirito',   lat:43.76541, lng:11.24770, type:'Restaurant €20–30',   rating:'4.4⭐', desc:'On Piazza Santo Spirito. Great outdoor seating and classic Tuscan dishes.',                              url:'https://maps.google.com/?q=Osteria+Santo+Spirito+Florence' },
-  { id:'c23', name:'La Terrazza Rooftop Bar', lat:43.76820, lng:11.25260, type:'Bar/Views',           rating:'3.6⭐', desc:'Hotel Continentale rooftop bar — views over Ponte Vecchio. Pricey but the setting is iconic.',           url:'https://maps.google.com/?q=La+Terrazza+Hotel+Continentale+Florence' },
+  { id:'c01', name:'La Gelatiera',          lat:43.76892, lng:11.25100, type:'Ice Cream',         rating:'4.8⭐', desc:'Top-rated artisanal gelato.',                                                  url:'https://maps.google.com/?q=La+Gelatiera+Florence' },
+  { id:'c02', name:'Braceria All\'11',       lat:43.77230, lng:11.24900, type:'Restaurant',         rating:'4.8⭐', desc:'Excellent meat restaurant.',                                                   url:'https://maps.google.com/?q=Braceria+All+11+Florence' },
+  { id:'c03', name:'Osteria Belguardo',      lat:43.76800, lng:11.24600, type:'Italian',            rating:'4.5⭐', desc:'Lovely Oltrarno osteria — warm, local, great value.',                          url:'https://maps.google.com/?q=Osteria+Belguardo+Florence' },
+  { id:'c04', name:'il Pacchero – pizza',    lat:43.77556, lng:11.26100, type:'Pizza €20–30',       rating:'4.6⭐', desc:'Great pizza slightly off the tourist track.',                                  url:'https://maps.google.com/?q=il+Pacchero+Florence' },
+  { id:'c05', name:'Le Barrique',            lat:43.77100, lng:11.25300, type:'Italian Wine Bar',   rating:'4.2⭐', desc:'Cosy wine bar with small plates and great atmosphere.',                        url:'https://maps.google.com/?q=Le+Barrique+Florence' },
+  { id:'c06', name:'Trattoria Giovanni',     lat:43.77440, lng:11.25460, type:'Restaurant €20–30',  rating:'4.8⭐', desc:'One of Florence\'s most beloved trattorias.',                                  url:'https://maps.google.com/?q=Trattoria+Giovanni+Florence' },
+  { id:'c07', name:'Madova Gloves',          lat:43.76800, lng:11.24950, type:'Leather Goods',      rating:'4.7⭐', desc:'Famous leather glove maker since 1919 — crafted to your hand size.',            url:'https://maps.google.com/?q=Madova+Florence' },
+  { id:'c08', name:'Trattoria Mario',        lat:43.77600, lng:11.25430, type:'Tuscan €20–30',      rating:'4.6⭐', desc:'Legendary workers\' trattoria near Mercato Centrale. Communal tables!',          url:'https://maps.google.com/?q=Trattoria+Mario+Florence' },
+  { id:'c09', name:'Da\' Vinattieri',         lat:43.76840, lng:11.25700, type:'Lampredotto €1–10',  rating:'4.7⭐', desc:'Tiny spot for lampredotto — authentic Florence street food.',                    url:'https://maps.google.com/?q=Da+Vinattieri+Florence' },
+  { id:'c10', name:'Trattoria Dall\'Oste',   lat:43.77380, lng:11.25660, type:'Steak ££',           rating:'4.7⭐', desc:'Famous for bistecca alla Fiorentina.',                                         url:'https://maps.google.com/?q=Trattoria+Dall+Oste+Florence' },
+  { id:'c11', name:'La Giostra',             lat:43.76980, lng:11.26100, type:'Italian £££',        rating:'4.3⭐', desc:'Charming restaurant run by a Medici family descendant.',                        url:'https://maps.google.com/?q=La+Giostra+Florence' },
+  { id:'c12', name:'Trattoria La Casalinga', lat:43.76550, lng:11.24700, type:'Tuscan €20–30',      rating:'4.5⭐', desc:'Old-school Oltrarno trattoria — great value, deeply authentic.',                url:'https://maps.google.com/?q=Trattoria+La+Casalinga+Florence' },
+  { id:'c13', name:'Gustapizza',             lat:43.76610, lng:11.24680, type:'Pizza €10–20',       rating:'4.5⭐', desc:'Beloved Oltrarno pizza — queue outside the tiny spot.',                        url:'https://maps.google.com/?q=Gustapizza+Florence' },
+  { id:'c14', name:'Gelateria dei Neri',     lat:43.76800, lng:11.25650, type:'Ice Cream ££',       rating:'4.7⭐', desc:'Excellent gelato near Santa Croce.',                                           url:'https://maps.google.com/?q=Gelateria+dei+Neri+Florence' },
+  { id:'c15', name:'La Strega Nocciola',     lat:43.76820, lng:11.25230, type:'Ice Cream ££',       rating:'4.7⭐', desc:'Artisanal gelato near Ponte Vecchio. The hazelnut is exceptional.',             url:'https://maps.google.com/?q=La+Strega+Nocciola+Ponte+Vecchio+Florence' },
+  { id:'c16', name:'Gelateria La Carraia',   lat:43.76760, lng:11.25000, type:'Ice Cream €',        rating:'4.7⭐', desc:'Beloved gelateria near Ponte alla Carraia — incredible value.',                  url:'https://maps.google.com/?q=Gelateria+La+Carraia+Florence' },
+  { id:'c17', name:'La Cité',               lat:43.76600, lng:11.24650, type:'Bistro/Books',        rating:'4.5⭐', desc:'Charming bookshop bistro in Oltrarno.',                                        url:'https://maps.google.com/?q=La+Cite+Florence' },
+  { id:'c18', name:'Rooster Cafe',           lat:43.77600, lng:11.25000, type:'Brunch €10–20',      rating:'4.8⭐', desc:'Top-rated brunch spot. Perfect for a relaxed morning.',                        url:'https://maps.google.com/?q=Rooster+Cafe+Firenze' },
+  { id:'c19', name:'Trattoria I\'raddi',     lat:43.76580, lng:11.24780, type:'Restaurant €20–30',  rating:'4.5⭐', desc:'Local favourite in Oltrarno — homestyle Tuscan cooking.',                       url:'https://maps.google.com/?q=Trattoria+Iraddi+Florence' },
+  { id:'c20', name:'La Ménagère',            lat:43.77140, lng:11.25280, type:'Restaurant/Bar ££',  rating:'4.2⭐', desc:'Beautiful restaurant and lifestyle concept store.',                             url:'https://maps.google.com/?q=La+Menagere+Florence' },
+  { id:'c21', name:'La Fettunta',            lat:43.76610, lng:11.24750, type:'Tuscan €10–30',      rating:'4.7⭐', desc:'Excellent Tuscan food in Oltrarno.',                                           url:'https://maps.google.com/?q=La+Fettunta+Florence' },
+  { id:'c22', name:'Osteria Santo Spirito',  lat:43.76541, lng:11.24770, type:'Restaurant €20–30',  rating:'4.4⭐', desc:'On Piazza Santo Spirito. Great outdoor seating.',                              url:'https://maps.google.com/?q=Osteria+Santo+Spirito+Florence' },
+  { id:'c23', name:'La Terrazza Rooftop',    lat:43.76820, lng:11.25260, type:'Bar/Views',          rating:'3.6⭐', desc:'Hotel Continentale rooftop bar — views over Ponte Vecchio.',                  url:'https://maps.google.com/?q=La+Terrazza+Hotel+Continentale+Florence' },
 ];
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    ITINERARY
-═══════════════════════════════════════════════════════════ */
+   Key anchors from tickets:
+   SAT: Accademia 08:45 · Campanile 11:15 (FIXED)
+   SUN: Uffizi 09:00 (BOOKED)
+═══════════════════════════════════════════════════════ */
 const ITIN = [
-  { day:'thu', title:'Thursday – Arrival Night', color:'#888888',
-    subtitle:'Late arrival · Just check in & rest',
-    stats:[],
+  { day:'thu', title:'Thursday – Arrival Night', color:'#888',
+    subtitle:'Late arrival · Just check in & rest', stats:[],
     stops:[
-      { time:'Late', icon:'✈️', name:'Arrive in Florence',
-        desc:'Head straight to Hotel Berchielli (Lungarno Acciaiuoli 14). If you have energy, it\'s 2 minutes to Ponte Vecchio at night — spectacular.',
+      { time:'Late night', icon:'✈️', name:'Arrive in Florence',
+        desc:'Head straight to Hotel Berchielli (Lungarno Acciaiuoli 14). Ponte Vecchio is 2 minutes on foot — magical at night if you have energy.',
         badges:[] },
       { time:'Night', icon:'🏨', name:'Hotel Berchielli – Check In',
-        desc:'Front desk is 24h. Settle in and rest — big days ahead.', badges:[] },
+        desc:'Front desk is 24h. Settle in and rest — tomorrow starts early.',
+        badges:[] },
     ]},
 
-  { day:'fri', title:'Friday – Heart of Florence', color:C.fri,
-    subtitle:'Full day · ~7 km walking · Dinner 19:30 booked',
-    stats:['~7 km', '~90 min walks', 'Dinner 19:30'],
+  { day:'fri', title:'Friday – The Heart of Florence', color:C.fri,
+    subtitle:'Full day · ~7 km walking · Dinner booked 19:30',
+    stats:['~7 km', '~85 min walking', 'Dinner 19:30'],
     stops:[
       { time:'8:00', icon:'☕', name:'Breakfast',
-        desc:'Italian colazione — espresso + cornetto at a local bar. Stand at the counter, it\'s cheaper and more authentic.',
+        desc:'Italian colazione — espresso + cornetto at a local bar. Stand at the counter; it\'s authentic and cheaper.',
         badges:[] },
       { tr:'🚶 From hotel → 12 min · 1.0 km' },
       { time:'9:00–10:00', icon:'🌿', name:'Farmaceutica di Santa Maria Novella',
-        desc:'The world\'s oldest pharmacy (1221) in a frescoed chapel. Divine perfumes and potions. A uniquely Florentine experience.',
-        badges:['🌿 Open 9am'], loc:'smn-farm' },
+        desc:'The world\'s oldest pharmacy (1221) in a stunning frescoed chapel. Perfumes, soaps, herbal remedies. One of the most atmospheric shops in Florence.',
+        badges:['⏰ Open 9am'], loc:'smn-farm' },
       { tr:'🚶 2 min · 0.15 km' },
       { time:'10:00–10:30', icon:'⛪', name:'Basilica di Santa Maria Novella',
-        desc:'Gothic marble façade — one of Florence\'s best. Masaccio\'s Trinity fresco inside changed the history of painting. Entry €7.50.',
-        badges:['🎟️ €7.50'], loc:'basilica-novella' },
+        desc:'Gothic marble façade — one of Florence\'s best exteriors. Masaccio\'s Trinity fresco inside (€7.50) changed the history of perspective in painting.',
+        badges:['🎟️ €7.50 entry'], loc:'basilica-novella' },
       { tr:'🚶 8 min · 0.6 km' },
       { time:'10:30–11:30', icon:'🛒', name:'Mercato Centrale',
-        desc:'Browse the stunning covered market. Ground floor: fresh produce, cheese, meats, lampredotto. Upstairs food court. Breakfast espresso if you haven\'t yet!',
+        desc:'Browse the stunning covered market. Ground floor: fresh produce, aged pecorino, cured meats. Upstairs food court. Try a lampredotto sandwich — the most Florentine bite possible.',
         badges:['🆓 Free entry'], loc:'mercato-centrale' },
       { tr:'🚶 12 min · 0.9 km' },
-      { time:'11:30–13:00', icon:'🏛️', name:'Duomo Complex',
-        desc:'Stand beneath Brunelleschi\'s dome and feel awed. The Baptistery\'s golden Gates of Paradise are stunning. If you booked the combo — climb the Campanile for the best views in Florence.',
-        badges:['🆓 Cathedral free', '📋 €30 combo if booked', '⚡ Campanile optional'], loc:'duomo' },
+      { time:'11:30–13:00', icon:'🏛️', name:'Duomo – Exterior & Free Interior',
+        desc:'Marvel at Brunelleschi\'s dome and the extraordinary marble façade. The Cathedral interior is free (Mon–Sat 10:15–15:45) — enter from the main door. Dress code: no bare shoulders or legs.\n\nNote: your Campanile climb (Giotto Pass) is Saturday at 11:15 — so just enjoy the exterior and interior today.',
+        badges:['🆓 Exterior + interior free', '👗 Dress code required', '🔔 Campanile = Saturday'], loc:'duomo' },
       { tr:'🚶 10 min · 0.75 km' },
       { time:'13:00–14:00', icon:'🥪', name:'Lunch – All\'Antico Vinaio',
-        desc:'Florence\'s most famous sandwich shop. Giant schiacciata bread stuffed with finocchiona, truffle cream, roasted peppers, pecorino. One of the best bites of the trip.',
-        badges:['🥪 Via dei Neri 74/76', '💶 ~€8–10', '⏰ Arrive early!'], loc:'vinaio' },
+        desc:'Florence\'s most famous sandwich shop. Giant schiacciata stuffed with finocchiona, truffle cream, roasted peppers, pecorino. One of the best things you\'ll eat all trip.',
+        badges:['🥪 Via dei Neri 74/76', '💶 ~€8–10', '⏰ Go before noon!'], loc:'vinaio' },
       { tr:'🚶 5 min · 0.35 km' },
       { time:'14:00–15:30', icon:'🏟️', name:'Piazza della Signoria & Loggia dei Lanzi',
-        desc:'Free open-air museum — Neptune Fountain, David copy, Perseus by Cellini, the Rape of the Sabine Women. The Palazzo Vecchio tower soars above it all.',
+        desc:'Florence\'s free open-air sculpture museum. Neptune Fountain, the David copy, Perseus by Cellini, Rape of the Sabine Women. Walk through the Loggia — it\'s entirely free and magnificent.',
         badges:['🆓 All free'], loc:'signoria' },
       { tr:'🚶 8 min · 0.5 km' },
       { time:'15:30–16:30', icon:'🌉', name:'Ponte Vecchio & Arno Walk',
-        desc:'Stroll the medieval bridge lined with jewellers. Walk the Lungarno (river embankment) back toward the hotel in the afternoon light. Magical.',
+        desc:'Stroll the medieval bridge lined with jewellers, then walk the Lungarno (river embankment) back toward the hotel in the afternoon light.',
         badges:['🆓 Free'], loc:'ponte-vecchio' },
       { tr:'🚶 5 min back to hotel' },
       { time:'16:30–18:30', icon:'🏨', name:'Rest & Freshen Up',
-        desc:'You\'ve earned it after 7 km! Rest at the hotel. Optional: walk 10 min to Vivoli for an affogato (espresso over gelato).',
+        desc:'You\'ve walked ~7 km! Rest at the hotel. Optional: walk 10 min to Vivoli for an affogato (espresso poured over gelato — your coffee helado!).',
         badges:[] },
       { tr:'🚶 15 min from hotel · 1.1 km' },
-      { time:'19:30', icon:'🍷', name:'Dinner – Trattoria Zà Zà ✅',
-        desc:'Your reservation! Classic Florentine trattoria near Mercato Centrale. Must-tries: ribollita (Tuscan bread soup), pappardelle al cinghiale (wild boar pasta), bistecca alla Fiorentina. Pair with Chianti Classico.',
-        badges:['✅ Booked 19:30', '🍽️ Classic Florentine'], loc:'zaza' },
+      { time:'19:30', icon:'🍷', name:'Dinner – Trattoria Zà Zà ✅ BOOKED',
+        desc:'Your reservation! Classic Florentine trattoria near Mercato Centrale. Must-tries: ribollita (Tuscan bread soup), pappardelle al cinghiale (wild boar pasta), bistecca alla Fiorentina. Pair with Chianti Classico Riserva.',
+        badges:['✅ Reservation 19:30', '🍽️ Classic Florentine'], loc:'zaza' },
     ]},
 
-  { day:'sat', title:'Saturday – Oltrarno, Sunset & Fiesole', color:C.sat,
-    subtitle:'Full day · ~9 km · Piazzale at sunset · Dinner 19:30 Fiesole',
-    stats:['~9 km', 'Sunset ~17:45', 'Taxi to Fiesole'],
+  { day:'sat', title:'Saturday – Accademia · Campanile · Oltrarno · Fiesole', color:C.sat,
+    subtitle:'Hard anchors: Accademia 08:45 · Campanile 11:15 · Dinner 19:30',
+    stats:['~9 km', '⛔ No backpacks!', 'Dinner in Fiesole'],
     stops:[
+      { time:'7:30', icon:'⚠️', name:'IMPORTANT: Pack light today',
+        desc:'The Campanile (11:15) does NOT allow backpacks. Leave large bags at the hotel. Small purses/sling bags (max 40×30×18cm) are fine. The Accademia also only allows small bags.',
+        badges:['⛔ NO backpacks for Campanile', '🎒 Small bags max 40×30×18cm'] },
       { time:'7:45', icon:'☕', name:'Quick Breakfast',
-        desc:'Early start for the Accademia. Espresso and cornetto nearby. Or head to Rooster Cafe (Christina\'s rec) if you book the later Accademia slot.',
+        desc:'Quick espresso and cornetto at a bar near the hotel. You need to leave by 8:20.',
         badges:[] },
-      { tr:'🚶 20 min from hotel · 1.5 km' },
-      { time:'8:15–10:00', icon:'🗿', name:'Galleria dell\'Accademia – The David',
-        desc:'Michelangelo carved this from a single block of Carrara marble over 2 years (1501–1504). 5.17 m of perfection. The hall of Prisoners (unfinished Michelangelo figures) leading to David is profoundly moving.',
-        badges:['📋 Must book!', '🎟️ €12–20', '⏱ Allow 1.5 hrs'], loc:'accademia' },
-      { tr:'🚶 12 min · 0.9 km' },
-      { time:'10:00–11:00', icon:'⚰️', name:'Cappelle Medicee (optional)',
-        desc:'The Medici mausoleum. Michelangelo\'s four allegorical figures — Night, Day, Dawn, Dusk — are uncanny and haunting.',
-        badges:['⚡ Optional', '🎟️ €9', '⏱ 45 min'], loc:'cappelle-med' },
-      { tr:'🚶 15 min · cross Ponte Vecchio · 1.1 km' },
-      { time:'11:30', icon:'🌉', name:'Cross into Oltrarno',
-        desc:'Cross Ponte Vecchio to the quieter, more local south bank. The Oltrarno feels like a different city — artisan workshops, neighbourhood bars, real Florence.',
+      { tr:'🚶 Leave hotel by 8:20 · 20 min walk · 1.5 km' },
+      { time:'08:45 ✅', icon:'🗿', name:'Galleria dell\'Accademia – BOOKED',
+        desc:'Michelangelo\'s David (1501–1504) — 5.17m of Carrara marble perfection. The hall of Prisoners (Michelangelo\'s unfinished figures) leading to David is profoundly moving. Allow 1.5 hrs.',
+        badges:['✅ BOOKED 08:45', '📱 Order 22111728 · show on phone', '⚠️ Carla: verify your ticket!'], loc:'accademia' },
+      { tr:'🚶 15 min to Duomo complex · 1.1 km' },
+      { time:'10:15', icon:'🏛️', name:'Walk to Duomo Complex — Drop Bags',
+        desc:'Walk south-west to the Duomo. If you have any bags beyond a small pouch, leave them at the Deposito Bagagli (luggage storage) inside the Duomo complex before your Campanile slot.',
+        badges:['⛔ Deposito Bagagli mandatory for zaini/backpacks'] },
+      { time:'11:00', icon:'⏱️', name:'Arrive at Campanile — be early!',
+        desc:'Be at the Campanile entrance (base of the bell tower, south side of Duomo) by 11:00. Your slot is 11:15 and is non-changeable. Show Giotto Pass QR codes on both phones.',
+        badges:['⚠️ Slot is 11:15 sharp, non-modifiable', '📱 Have both Giotto Pass QR codes ready'] },
+      { time:'11:15 ✅', icon:'🔔', name:'Campanile di Giotto – BOOKED',
+        desc:'Your 11:15 slot! 414 steps to the top (no lift). You can see the dome from here — arguably the best view of it in the city. Allow 45–60 min. The views over Florence are extraordinary.',
+        badges:['✅ Giotto Pass · 11:15 slot', '🚶 414 steps · no lift', '⏱ Allow ~1 hour'], loc:'campanile' },
+      { tr:'🚶 1 min walk' },
+      { time:'12:15–12:45', icon:'🚪', name:'Battistero (Baptistery)',
+        desc:'Enter from the North door (on your Giotto Pass). Ghiberti\'s golden "Gates of Paradise" bronze doors are magnificent. Note: vault mosaics are under restoration and not visible inside.',
+        badges:['✅ Giotto Pass included', '⛪ North door entry', '🔧 Vault mosaics under restoration'], loc:'baptistery' },
+      { time:'12:45–13:00', icon:'🏛️', name:'Duomo Interior (free) or Museo dell\'Opera',
+        desc:'Option A: Enter the Cathedral for free via the Santa Reparata entrance (Campanile door, south side) — see the Gothic interior and the underground Santa Reparata excavations.\nOption B: Head to Museo dell\'Opera del Duomo (Piazza del Duomo 9) — it\'s on your Giotto Pass and houses Michelangelo\'s Pietà Bandini and original Gates of Paradise panels.',
+        badges:['🆓 Cathedral free (dress code)', '✅ Museo on Giotto Pass'], loc:'duomo-museo' },
+      { tr:'🚶 10 min to lunch · 0.75 km' },
+      { time:'13:00–14:00', icon:'🥪', name:'Lunch near Piazza Signoria',
+        desc:'Head to All\'Antico Vinaio again (it\'s that good!) or:\n• Il Panino del Chianti — near Uffizi\n• Retrobottega — creative Tuscan sandwiches\n• Da\' Vinattieri (Christina\'s pick) — lampredotto on the go',
+        badges:['💡 Several great options near Signoria'] },
+      { tr:'🚶 8 min across Ponte Vecchio · 0.6 km' },
+      { time:'14:00–15:30', icon:'🌉', name:'Cross to Oltrarno',
+        desc:'Cross Ponte Vecchio to the south bank. The Oltrarno is quieter and more local — artisan workshops, neighbourhood bars, real Florence. Wander Via Maggio and the backstreets.',
         badges:[], loc:'ponte-vecchio' },
       { tr:'🚶 10 min · 0.7 km' },
-      { time:'13:00–14:30', icon:'🍝', name:'Lunch in Oltrarno',
-        desc:'Several brilliant options:\n• Trattoria La Casalinga — legendary old-school, great value\n• Gustapizza — queue-worthy pizza\n• Osteria Santo Spirito — outdoor tables on the piazza\n• La Fettunta — excellent Tuscan classics\n• Trattoria I\'raddi (Christina\'s pick)',
-        badges:['💡 All within 5 min of Pitti'] },
-      { tr:'🚶 10 min · 0.7 km' },
-      { time:'14:30–16:00', icon:'👑', name:'Palazzo Pitti & Boboli Gardens',
-        desc:'Enormous Medici palace with the Palatine Gallery — Raphael, Titian, Rubens. Boboli Gardens behind have fountains, grottos, cypress alleys, and sweeping views over Florence.',
-        badges:['🎟️ €16 combo', '⏱ Allow 1.5 hrs'], loc:'pitti' },
+      { time:'14:30–15:45', icon:'👑', name:'Palazzo Pitti / Boboli Gardens (optional)',
+        desc:'After a big morning, a light option:\n• Boboli Gardens only (€8) — fountains, grottos, city views. Peaceful and beautiful.\n• Skip Pitti interior today if museum fatigue is setting in — save energy for the sunset walk.',
+        badges:['⚡ Optional', '🌿 Boboli €8 · Pitti+Boboli €16'], loc:'pitti' },
       { tr:'🚶 5 min · 0.35 km' },
-      { time:'16:00–16:30', icon:'⛪', name:'Piazza Santo Spirito',
-        desc:'The best square in Oltrarno. Grab an aperitivo, check if the Sunday antique market is running (9am–7pm). The basilica has a Michelangelo crucifix in the sacristy.',
+      { time:'15:45–16:15', icon:'⛪', name:'Piazza Santo Spirito',
+        desc:'The most relaxed square in Florence. Aperitivo at one of the bars. Check if the Sunday antique market is running (9am–7pm). The basilica has a Michelangelo crucifix in the sacristy.',
         badges:['🛍 Sunday market (check locally)', '🆓 Free'], loc:'santo-spirito' },
       { tr:'🚶 5 min · 0.35 km' },
-      { time:'16:30–17:00', icon:'🍷', name:'Babae – Buchette del Vino',
-        desc:'Order wine through a tiny 17th-century stone hatch in the palazzo wall. Babae revived this historic Florentine tradition. Get a glass of Chianti through the little door!',
-        badges:['🍷 Via Santa Monaca 7r', '💶 ~€4–6'], loc:'babae' },
+      { time:'16:15–16:45', icon:'🍷', name:'Babae – Buchette del Vino',
+        desc:'Order wine through a 400-year-old stone hatch (buchetta del vino) embedded in the palazzo wall. A uniquely Florentine experience revived by Babae. Get a Chianti through the little door!',
+        badges:['🍷 Via Santa Monaca 7r', '💶 ~€4–6/glass'], loc:'babae' },
       { tr:'🚶 20 min uphill (or Bus 13) · 1.4 km' },
-      { time:'17:15–18:15', icon:'🌅', name:'Piazzale Michelangelo – Sunset',
-        desc:'The definitive panoramic view of Florence. February sunset is around 17:45 — arrive early for a good spot. The entire skyline with Duomo, Campanile, and Palazzo Vecchio in golden light is unforgettable.',
-        badges:['🌇 Sunset ~17:45 Feb', '🚌 Bus 13 option', '🆓 Free'], loc:'piazzale' },
-      { tr:'🚶 5–10 min uphill (optional)' },
-      { time:'18:15', icon:'🕍', name:'San Miniato al Monte (optional)',
-        desc:'5 min uphill from Piazzale Michelangelo. Free entry, extraordinary Romanesque church. Vespers (monks singing) at 5:30pm is hauntingly beautiful.',
-        badges:['⚡ Optional', '🆓 Free', '🔔 Vespers 5:30pm'], loc:'san-miniato' },
+      { time:'17:10–18:10', icon:'🌅', name:'Piazzale Michelangelo – Sunset',
+        desc:'The most iconic view in Florence. February sunset is around 17:45 — arrive by 17:15 for a spot. The entire skyline — Duomo, Campanile, Palazzo Vecchio — turns golden. Unforgettable.',
+        badges:['🌇 Sunset ~17:45 in February', '🆓 Free', '🚌 Bus 13 if you don\'t want to walk up'], loc:'piazzale' },
       { tr:'🚕 Taxi from Piazzale Michelangelo · ~15–20 min · ~€20–25' },
-      { time:'19:30', icon:'🍷', name:'Dinner – La Reggia degli Etruschi ✅',
-        desc:'Your Saturday dinner in the hills of Fiesole! Panoramic views over Florence from above. Tuscan cuisine in an extraordinary hillside setting — this will be a lasting memory.',
-        badges:['✅ Booked 19:30', '📍 Fiesole', '🌃 Views over Florence'], loc:'reggia' },
+      { time:'19:30 ✅', icon:'🍷', name:'Dinner – La Reggia degli Etruschi BOOKED',
+        desc:'Your Saturday dinner in the hills of Fiesole! Panoramic views over Florence from above. Tuscan cuisine in an extraordinary hilltop setting. This will be a lasting memory.',
+        badges:['✅ Booked 19:30', '📍 Fiesole hills', '🌃 Views over Florence'], loc:'reggia' },
       { time:'After dinner', icon:'🚕', name:'Taxi Back to Hotel',
-        desc:'~20–25 min back down into Florence (~€25–30 from Fiesole). Enjoy the night view as you descend.',
+        desc:'~20–25 min back down into Florence (~€25–30 from Fiesole). Enjoy the night views as you descend.',
         badges:['🚕 ~25 min · ~€25–30'] },
     ]},
 
-  { day:'sun', title:'Sunday – Last Morning', color:C.sun,
-    subtitle:'Morning only · Leave for airport ~15:00 ✈️',
-    stats:['~4 km', 'Check out 12pm', 'Airport 15:00'],
+  { day:'sun', title:'Sunday – Uffizi & Last Morning', color:C.sun,
+    subtitle:'Hard anchor: Uffizi 09:00 · Leave airport ~15:00 ✈️',
+    stats:['~4 km', 'Uffizi 09:00 BOOKED', 'Airport 15:00'],
     stops:[
       { time:'8:00', icon:'☕', name:'Last Italian Breakfast',
         desc:'Savour your final espresso al bar. Stand at the counter, sip slowly, watch Florentines begin their Sunday.',
         badges:[] },
       { tr:'🚶 12 min from hotel · 0.9 km' },
-      { time:'8:15–10:30', icon:'🖼️', name:'Uffizi Galleries (if booked)',
-        desc:'Botticelli\'s Birth of Venus & Primavera, da Vinci\'s Annunciation, Raphael\'s portraits, Michelangelo\'s Doni Tondo. If booked, this is one of the greatest 2 hours in Florence.',
-        badges:['📋 Book at uffizi.it', '⚡ Optional', '🎟️ €20–25', '⏱ Allow 2 hrs'], loc:'uffizi' },
+      { time:'09:00 ✅', icon:'🖼️', name:'Le Gallerie degli Uffizi – BOOKED',
+        desc:'Botticelli\'s Birth of Venus & Primavera — the most recognisable paintings in the world. Also: da Vinci\'s Annunciation, Raphael\'s portraits, Michelangelo\'s Doni Tondo. Take your time, this is extraordinary.',
+        badges:['✅ BOOKED 09:00', '📱 PNR: S22WTAG2 · show both tickets', '⏱ Allow 2–2.5 hrs', '📷 Photos OK, no flash'], loc:'uffizi' },
       { tr:'🚶 8 min · 0.6 km' },
-      { time:'10:30–11:30', icon:'☕', name:'Caffè Gilli – Piazza della Repubblica',
-        desc:'Historic café since 1733 on Florence\'s grandest 19th-century square. Coffee and pastry as a proper treat on your last morning.',
-        badges:['☕ Since 1733', '🎠 Vintage carousel in the square'], loc:'piazza-rep' },
+      { time:'11:30–12:00', icon:'☕', name:'Caffè Gilli – Piazza della Repubblica',
+        desc:'Historic café since 1733 on Florence\'s grandest square. A proper coffee and pastry as a treat on your last morning. The vintage carousel makes for a beautiful final photo.',
+        badges:['☕ Historic café since 1733', '🎠 Vintage carousel on the square'], loc:'piazza-rep' },
       { tr:'🚶 10 min · 0.75 km' },
-      { time:'11:30–12:30', icon:'🍦', name:'Vivoli – Farewell Affogato',
-        desc:'Florence\'s oldest gelateria since 1929. End your trip with an affogato — espresso poured over vanilla gelato. No cones, only cups. The perfect farewell to Florence.',
-        badges:['🍦 Since 1929', '☕ Get the affogato!', '💶 €2–4'], loc:'vivoli' },
+      { time:'12:00–12:30', icon:'🍦', name:'Vivoli – Farewell Affogato',
+        desc:'Florence\'s oldest gelateria (since 1929). End your trip with an affogato — a shot of espresso poured over vanilla gelato. No cones here, only cups. The perfect farewell to Florence.',
+        badges:['🍦 Since 1929', '☕ Order the affogato!', '💶 €2–4', '❌ Closed Mondays — but today is Sunday ✓'], loc:'vivoli' },
       { tr:'🚶 10 min back to hotel' },
       { time:'13:00', icon:'🏨', name:'Hotel Checkout & Pack',
-        desc:'Collect luggage, check out, settle extras. Book your taxi to the airport in advance.',
+        desc:'Collect luggage, check out, settle any extras. Book your taxi to the airport in advance (itTaxi or Uber).',
         badges:[] },
-      { time:'15:00', icon:'✈️', name:'Leave for Florence Airport',
+      { time:'15:00', icon:'✈️', name:'Leave for Florence Airport ✈️',
         desc:'Taxi to Aeroporto Amerigo Vespucci (Peretola) — ~20–25 min from the hotel. Arrivederci, Firenze! 🌸',
-        badges:['🚕 ~20–25 min', '✈️ Aeroporto di Firenze'] },
+        badges:['🚕 ~20–25 min', '✈️ Aeroporto di Firenze Peretola'] },
     ]},
 ];
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    TAB SWITCHING
-═══════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════ */
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
@@ -703,29 +762,26 @@ function switchTab(tab) {
   if (tab === 'map') setTimeout(() => map.invalidateSize(), 100);
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    TOAST
-═══════════════════════════════════════════════════════════ */
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+═══════════════════════════════════════════════════════ */
+let toastT;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    MAP
-═══════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════ */
 const map = L.map('map', { center:[43.7700, 11.2530], zoom:14, zoomControl:false });
 L.control.zoom({ position:'bottomright' }).addTo(map);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-  maxZoom:19,
+  attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a>', maxZoom:19,
 }).addTo(map);
 
-// Marker factory
 function mkIcon(emoji, bg, sz=34) {
   return L.divIcon({
     html:`<div class="cm" style="width:${sz}px;height:${sz}px;background:${bg};font-size:${Math.round(sz*.44)}px">${emoji}</div>`,
@@ -739,17 +795,18 @@ function christIcon() {
   });
 }
 
-// Popup builders
 function dayName(d) { return {fri:'Friday',sat:'Saturday',sun:'Sunday'}[d]||d; }
 function mainPopup(loc) {
   const col = C[loc.day]||'#888';
+  const bookedTag = (loc.name.includes('✅') || loc.book) ?
+    (loc.name.includes('✅') ? '<span class="pw-tag t-booked">✅ Booked</span>' : '<span class="pw-tag t-book">📋 Book ahead</span>') : '';
   return `<div class="pw">
     <div class="pw-name">${loc.icon} ${loc.name}</div>
     <div class="pw-desc">${loc.desc}</div>
     ${loc.tip?`<div class="pw-tip">💡 ${loc.tip}</div>`:''}
     <div class="pw-tags">
       <span class="pw-tag t-day" style="background:${col}">${dayName(loc.day)}</span>
-      ${loc.book?'<span class="pw-tag t-book">📋 Book ahead</span>':''}
+      ${bookedTag}
       ${loc.opt?'<span class="pw-tag t-opt">Optional</span>':''}
     </div>
     <div class="pw-btns">
@@ -771,19 +828,18 @@ function chrisPopup(r) {
   </div>`;
 }
 
-// Hotel
-const hotelMarker = L.marker([HOTEL.lat, HOTEL.lng], { icon: mkIcon('🏨', C.hotel, 42) })
+// Hotel marker
+L.marker([HOTEL.lat, HOTEL.lng], { icon: mkIcon('🏨', C.hotel, 42) })
   .bindPopup(`<div class="pw"><div class="pw-name">🏨 ${HOTEL.name}</div><div class="pw-desc">${HOTEL.desc}</div><div class="pw-btns"><a href="${HOTEL.mapsUrl}" target="_blank" class="pw-btn btn-gm">🗺️ Open Maps</a></div></div>`)
   .addTo(map);
 
 // Main markers
-const markerMap = {}; // id → marker (for fly-to from itinerary)
+const markerMap = {};
 const byDay = { fri:[], sat:[], sun:[] };
 LOCS.forEach(loc => {
   const col = C[loc.day]||'#888';
   const m = L.marker([loc.lat, loc.lng], { icon: mkIcon(loc.icon, col) })
-    .bindPopup(mainPopup(loc), { maxWidth:300 })
-    .addTo(map);
+    .bindPopup(mainPopup(loc), { maxWidth:300 }).addTo(map);
   markerMap[loc.id] = m;
   if (byDay[loc.day]) byDay[loc.day].push(m);
 });
@@ -792,19 +848,19 @@ LOCS.forEach(loc => {
 const chMarkers = [];
 CHRIS.forEach(r => {
   const m = L.marker([r.lat, r.lng], { icon: christIcon() })
-    .bindPopup(chrisPopup(r), { maxWidth:280 })
-    .addTo(map);
+    .bindPopup(chrisPopup(r), { maxWidth:280 }).addTo(map);
   chMarkers.push(m);
 });
 
-// Route polylines
+// Day routes
 const ROUTES = {
   fri:[ [HOTEL.lat,HOTEL.lng],[43.77445,11.24969],[43.77452,11.24901],[43.77616,11.25381],
         [43.77308,11.25600],[43.76862,11.25548],[43.76979,11.25592],
         [43.76803,11.25312],[HOTEL.lat,HOTEL.lng],[43.77659,11.25431] ],
-  sat:[ [HOTEL.lat,HOTEL.lng],[43.77672,11.25815],[43.77541,11.25275],
-        [43.76803,11.25312],[43.76511,11.24976],[43.76541,11.24806],
-        [43.76690,11.24985],[43.76281,11.26520],[43.8022,11.2982] ],
+  sat:[ [HOTEL.lat,HOTEL.lng],[43.77672,11.25815],[43.77299,11.25581],[43.77336,11.25516],
+        [43.76862,11.25548],[43.76979,11.25592],[43.76803,11.25312],
+        [43.76511,11.24976],[43.76541,11.24806],[43.76690,11.24985],
+        [43.76281,11.26520],[43.8022,11.2982] ],
   sun:[ [HOTEL.lat,HOTEL.lng],[43.76787,11.25535],[43.77160,11.25385],
         [43.76938,11.25973],[HOTEL.lat,HOTEL.lng] ],
 };
@@ -814,23 +870,19 @@ Object.entries(ROUTES).forEach(([d,coords]) => {
 });
 
 // Fly-to from itinerary
-function flyToLocation(id) {
+function flyTo(id) {
   const loc = LOCS.find(l => l.id === id);
   if (!loc) return;
   switchTab('map');
   setTimeout(() => {
-    map.flyTo([loc.lat, loc.lng], 17, { duration: 1.2 });
-    setTimeout(() => {
-      if (markerMap[id]) markerMap[id].openPopup();
-    }, 1300);
+    map.flyTo([loc.lat, loc.lng], 17, { duration:1.2 });
+    setTimeout(() => markerMap[id]?.openPopup(), 1300);
   }, 150);
-  showToast(`📍 ${loc.name}`);
+  toast(`📍 ${loc.name.replace(' ✅ BOOKED','').replace(' ✅','')}`);
 }
 
 // Filter chips
 const ctrl = document.getElementById('mapControls');
-const vis = { fri:true, sat:true, sun:true, ch:true };
-
 function mkChip(label, col, key, isCh=false) {
   const el = document.createElement('label');
   el.className = 'chip';
@@ -838,11 +890,9 @@ function mkChip(label, col, key, isCh=false) {
   el.innerHTML = `<input type="checkbox" checked><span class="dot" style="background:${col}"></span>${label}`;
   el.querySelector('input').addEventListener('change', e => {
     const on = e.target.checked;
-    vis[key] = on;
     el.classList.toggle('off', !on);
-    if (isCh) {
-      chMarkers.forEach(m => on ? m.addTo(map) : map.removeLayer(m));
-    } else {
+    if (isCh) { chMarkers.forEach(m => on ? m.addTo(map) : map.removeLayer(m)); }
+    else {
       byDay[key]?.forEach(m => on ? m.addTo(map) : map.removeLayer(m));
       if (routeLayers[key]) on ? routeLayers[key].addTo(map) : map.removeLayer(routeLayers[key]);
     }
@@ -852,15 +902,15 @@ function mkChip(label, col, key, isCh=false) {
 ctrl.appendChild(mkChip('Friday',       C.fri, 'fri'));
 ctrl.appendChild(mkChip('Saturday',     C.sat, 'sat'));
 ctrl.appendChild(mkChip('Sunday',       C.sun, 'sun'));
-ctrl.appendChild(mkChip("⭐ Christina's", C.ch, 'ch', true));
+ctrl.appendChild(mkChip("⭐ Christina's", C.ch,  'ch',  true));
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    ITINERARY RENDER
-═══════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════ */
 const itinEl = document.getElementById('itinerary');
 
 itinEl.innerHTML = `
-  <div class="overview">
+  <div class="card">
     <h3>📌 Trip at a Glance</h3>
     <div class="ov-grid">
       <div class="ov-item"><strong>🏨 Hotel</strong><span>Berchielli, Lungarno Acciaiuoli</span></div>
@@ -871,19 +921,28 @@ itinEl.innerHTML = `
       <div class="ov-item"><strong>🚶 Total walking</strong><span>~18–20 km over 3 days</span></div>
     </div>
   </div>
-  <div class="book-card">
-    <h3>📋 Book These Before You Go!</h3>
-    <div class="book-item">🏛️ <span><strong>Duomo combo</strong> (dome + campanile + baptistery) — <em>operaduomo.firenze.it</em> · €30</span></div>
-    <div class="book-item">🗿 <span><strong>Galleria Accademia</strong> (David) — <em>galleriaaccademiafirenze.it</em> · €12–20</span></div>
-    <div class="book-item">🖼️ <span><strong>Uffizi</strong> (optional, Sunday) — <em>uffizi.it</em> · €20–25</span></div>
-    <div class="book-item">🎨 <span><strong>Cappella Brancacci</strong> (optional, Sat) — <em>museicivicifiorentini.it</em> · €10</span></div>
+  <div class="alert-card warn">
+    <h3>⛔ Saturday Warning — Read Before You Go!</h3>
+    <div class="alert-item">🎒 <span><strong>NO BACKPACKS on Saturday</strong> — Campanile strictly prohibits them. Leave at hotel or Deposito Bagagli at the Duomo complex.</span></div>
+    <div class="alert-item">⏰ <span><strong>Campanile slot 11:15 is fixed</strong> and cannot be changed. Arrive at the tower by 11:00.</span></div>
+    <div class="alert-item">🗿 <span><strong>Leave hotel by 8:20</strong> to reach Accademia for 8:45 entry.</span></div>
+    <div class="alert-item">⚠️ <span><strong>Accademia: only 1 ticket confirmed for Luis</strong> — verify Carla's ticket before Saturday!</span></div>
+  </div>
+  <div class="alert-card book">
+    <h3>✅ Your Confirmed Bookings</h3>
+    <div class="alert-item">🗿 <span><strong>Accademia (David)</strong> — Sat 21 Feb · 08:45 · Order 22111728</span></div>
+    <div class="alert-item">🔔 <span><strong>Giotto Pass ×2</strong> (Campanile + Baptistery + Museo) — Sat 21 Feb · Campanile 11:15</span></div>
+    <div class="alert-item">🖼️ <span><strong>Uffizi ×2</strong> — Sun 22 Feb · 09:00 · PNR S22WTAG2</span></div>
+    <div class="alert-item">🍷 <span><strong>Trattoria Zà Zà</strong> — Fri 20 Feb · 19:30</span></div>
+    <div class="alert-item">🍷 <span><strong>La Reggia degli Etruschi</strong> — Sat 21 Feb · 19:30 · Fiesole</span></div>
   </div>`;
 
-// Badge class helper
-function badgeClass(b) {
+function badgeCls(b) {
+  if (b.includes('✅') || b.includes('Booked') || b.includes('BOOKED')) return 'b-booked';
   if (b.includes('📋') || b.includes('Book')) return 'b-book';
-  if (b.includes('✅') || b.includes('🍽️') || b.includes('Booked')) return 'b-rest';
+  if (b.includes('⛔') || b.includes('NO backpacks') || b.includes('WARNING') || b.includes('⚠️') || b.includes('verify')) return 'b-warn';
   if (b.includes('⚡') || b.includes('Optional')) return 'b-opt';
+  if (b.includes('🍽️') || b.includes('Restaurant')) return 'b-rest';
   if (b.includes('🚕') || b.includes('Taxi')) return 'b-taxi';
   return 'b-walk';
 }
@@ -891,143 +950,156 @@ function badgeClass(b) {
 ITIN.forEach(day => {
   const sec = document.createElement('div');
   sec.className = 'day-section';
-
-  const hdr = document.createElement('div');
-  hdr.className = 'day-header';
-  hdr.style.background = day.color;
-  hdr.innerHTML = `<h2>${day.title}</h2><p>${day.subtitle}</p>`
-    + (day.stats.length ? `<div class="day-stats">${day.stats.map(s=>`<span>${s}</span>`).join('')}</div>` : '');
-  sec.appendChild(hdr);
+  sec.innerHTML = `<div class="day-header" style="background:${day.color}">
+    <h2>${day.title}</h2><p>${day.subtitle}</p>
+    ${day.stats.length?`<div class="day-stats">${day.stats.map(s=>`<span>${s}</span>`).join('')}</div>`:''}
+  </div>`;
 
   day.stops.forEach(s => {
-    // Transit connector
     if (s.tr) {
       const t = document.createElement('div');
       t.className = 'transit';
-      const icon = s.tr.startsWith('🚕') ? '🚕' : '🚶';
-      t.innerHTML = `<span class="transit-ic">${icon}</span><span>${s.tr.replace(/^[🚕🚶]\s*/,'')}</span>`;
-      sec.appendChild(t);
-      return;
+      const ic = s.tr.startsWith('🚕') ? '🚕' : s.tr.startsWith('🚶') ? '🚶' : '•';
+      t.innerHTML = `<span>${ic}</span><span>${s.tr.replace(/^[🚕🚶•]\s*/,'')}</span>`;
+      sec.appendChild(t); return;
     }
-
-    const stopEl = document.createElement('div');
-    stopEl.className = 'stop';
-
     const loc = s.loc ? LOCS.find(l => l.id === s.loc) : null;
-    const badges = (s.badges||[]).map(b => `<span class="badge ${badgeClass(b)}">${b}</span>`).join('');
-    const actions = loc ? `<div class="stop-acts">
-      <button onclick="flyToLocation('${loc.id}')" class="s-btn" style="background:#FF6B35;color:white">🗺️ Show on Map</button>
+    const el = document.createElement('div');
+    el.className = 'stop';
+    const badges = (s.badges||[]).map(b=>`<span class="badge ${badgeCls(b)}">${b}</span>`).join('');
+    const acts = loc ? `<div class="stop-acts">
+      <button onclick="flyTo('${loc.id}')" class="s-btn" style="background:#FF6B35;color:white">🗺️ Show on Map</button>
       <a href="${loc.mapsUrl}" target="_blank" class="s-btn" style="background:#4285F4;color:white">Google Maps</a>
       <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" target="_blank" class="s-btn" style="background:#0F9D58;color:white">Directions</a>
     </div>` : '';
-
-    stopEl.innerHTML = `
+    el.innerHTML = `
       <div class="stop-time">${s.time}</div>
       <div class="stop-name">${s.icon} ${s.name}</div>
       <div class="stop-desc">${s.desc}</div>
-      ${badges ? `<div class="stop-badges">${badges}</div>` : ''}
-      ${actions}`;
-    sec.appendChild(stopEl);
+      ${badges?`<div class="stop-badges">${badges}</div>`:''}
+      ${acts}`;
+    sec.appendChild(el);
   });
-
   itinEl.appendChild(sec);
 });
 
-/* ═══════════════════════════════════════════════════════════
-   TIPS RENDER
-═══════════════════════════════════════════════════════════ */
-const tipsEl = document.getElementById('tips');
+/* ═══════════════════════════════════════════════════════
+   TICKETS RENDER
+═══════════════════════════════════════════════════════ */
+const tktEl = document.getElementById('tickets');
 
-const TIPS_DATA = [
-  {
-    icon:'🚕', title:'Getting Around',
-    items:[
-      { icon:'🚕', h:'Taxis',          b:'Use official white Florence taxis (metered). From hotel to Fiesole ~€20–25, airport ~€25–30. Apps: itTaxi (Italian Uber equivalent). Uber also works.' },
-      { icon:'🚌', h:'Bus 13',         b:'Runs from Piazza San Marco to Piazzale Michelangelo. Perfect if you don\'t want to walk uphill.' },
-      { icon:'🚶', h:'Walking',         b:'Florence\'s historic centre is tiny — almost everything is within 15–20 min walk from Hotel Berchielli. Your best mode of transport!' },
-      { icon:'🛵', h:'E-scooters',     b:'Lime and Bird scooters are available. Useful for getting to Oltrarno quickly.' },
-      { icon:'✈️', h:'Airport taxi',   b:'Aeroporto Amerigo Vespucci (Peretola/FLR) is ~20–25 min from hotel by taxi. Fixed fare ~€22–25.' },
-    ]
-  },
-  {
-    icon:'🍽️', title:'Eating & Drinking',
-    items:[
-      { icon:'☕', h:'Coffee culture',   b:'Espresso is sipped standing at the bar — it\'s cheaper too! Cappuccino is a morning drink only (Italians don\'t drink it after midday). A "caffè" = espresso.' },
-      { icon:'🍷', h:'Tipping',          b:'Not expected in Italy! Round up the bill or leave 1–2€ per person as a gesture at restaurants. Never tip at bars.' },
-      { icon:'⏰', h:'Meal times',       b:'Lunch 13:00–14:30, dinner not before 19:30 (most places). Going at 18:30 marks you as a tourist. Sunday lunches are long and leisurely.' },
-      { icon:'🥩', h:'Must-try dishes', b:'Bistecca alla Fiorentina (T-bone steak, huge), Ribollita (bread & vegetable soup), Pappardelle al cinghiale (wild boar pasta), Lampredotto (tripe sandwich), Schiacciata (flatbread).' },
-      { icon:'🍦', h:'Gelato tips',     b:'Avoid gelato piled high in multicoloured mountains — that\'s for tourists. Look for gelato stored in metal containers with lids (artigianale). Vivoli, La Carraia, Gelateria dei Neri = the real deal.' },
-    ]
-  },
-  {
-    icon:'🏛️', title:'Visiting Churches & Sights',
-    items:[
-      { icon:'👗', h:'Dress code',      b:'Cover shoulders and knees to enter churches (Duomo, Santa Maria Novella, etc). Pack a scarf or light layer. You\'ll be turned away without it.' },
-      { icon:'📋', h:'Book in advance', b:'Accademia (David), Uffizi, Duomo dome, and Brancacci Chapel all sell out — especially weekends. Book online before your trip.' },
-      { icon:'🌅', h:'Best times',      b:'Sights are best early morning (8–9am) or late afternoon. Avoid midday queues. Museums are quieter at opening.' },
-      { icon:'📷', h:'Photography',     b:'No flash photography inside churches. Uffizi allows photography without flash. The Brancacci Chapel is strictly no photos.' },
-    ]
-  },
-  {
-    icon:'💶', title:'Money & Payments',
-    items:[
-      { icon:'💳', h:'Cards',           b:'Most places accept cards, but carry some cash (€50–100). Small bars, markets, and street food vendors are often cash-only.' },
-      { icon:'🏧', h:'ATMs',            b:'Use ATMs from Italian banks (Intesa Sanpaolo, UniCredit). Avoid standalone ATMs with extra fees. Your bank card will work fine.' },
-      { icon:'💶', h:'Coperto',         b:'Many restaurants charge a "coperto" (cover charge) of €1.50–3 per person. It\'s normal and covers bread.' },
-      { icon:'🧾', h:'Receipts',        b:'Always take your receipt from restaurants and bars — in Italy there\'s a legal requirement and you can be fined for leaving without it.' },
-    ]
-  },
-  {
-    icon:'🌤️', title:'February in Florence',
-    items:[
-      { icon:'🌡️', h:'Weather',        b:'Expect 8–14°C. Can be chilly, possibly rainy. Dress in layers. A waterproof jacket is wise. Fewer tourists than summer — a real advantage!' },
-      { icon:'👟', h:'Footwear',        b:'Comfortable walking shoes are essential — cobblestones are everywhere. Avoid new shoes; break them in before the trip.' },
-      { icon:'🌇', h:'Sunset',          b:'Sunset in February Florence is around 17:40–17:50. Perfect for Piazzale Michelangelo on Saturday.' },
-      { icon:'🏨', h:'Quieter season',  b:'February is off-peak — shorter queues, lower prices, more authentic atmosphere. Some minor restaurants may be closed Mon/Tue.' },
-    ]
-  },
-  {
-    icon:'🗣️', title:'Useful Italian Phrases',
-    phrases:[
-      ['Un caffè per favore', 'One coffee please'],
-      ['Il conto, per favore', 'The bill please'],
-      ['Grazie / Prego', 'Thank you / You\'re welcome'],
-      ['Dov\'è...?', 'Where is...?'],
-      ['Buongiorno / Buonasera', 'Good morning / evening'],
-      ['Vorrei prenotare', 'I\'d like to book'],
-      ['Quanto costa?', 'How much does it cost?'],
-      ['Scusi', 'Excuse me / Sorry'],
-      ['Per favore', 'Please'],
-      ['Parla inglese?', 'Do you speak English?'],
-    ]
-  },
-  {
-    icon:'🆘', title:'Emergency & Useful Numbers',
-    items:[
-      { icon:'🚨', h:'Emergency (all)',   b:'112 (European emergency number — works for police, ambulance, fire)' },
-      { icon:'🏥', h:'Hospital',          b:'Ospedale Santa Maria Nuova — Piazza Santa Maria Nuova 1 (10 min walk from hotel)' },
-      { icon:'💊', h:'Pharmacy (farmacia)',b:'Look for the green cross. Farmacia Centrale (Piazza della Repubblica) open late.' },
-      { icon:'📞', h:'Hotel',             b:'Hotel Berchielli: +39 055 264061' },
-    ]
-  },
+tktEl.innerHTML = `<div class="card">
+  <h3>🎫 Your Tickets</h3>
+  <p style="font-size:13px;color:var(--muted);line-height:1.5">All tickets are digital — show QR codes on your phone screen at entry. Keep brightness high. Have both phones ready for dual bookings.</p>
+</div>`;
+
+TICKETS.forEach(t => {
+  const div = document.createElement('div');
+  div.className = 'tkt-card';
+
+  const refsHtml = t.refs.map(r => `<div><strong>${r.l}:</strong> ${r.v}</div>`).join('');
+  const inclHtml = t.includes ? `<div class="tkt-includes">
+    <h4>✅ This ticket includes:</h4>
+    ${t.includes.map(i=>`<div class="tkt-inc-item"><span>•</span><span>${i}</span></div>`).join('')}
+  </div>` : '';
+  const warnHtml = t.warnings.length ? `<div class="tkt-warn">
+    <h4>⚠️ Important notes:</h4>
+    ${t.warnings.map(w=>`<div class="tkt-warn-item"><span>•</span><span>${w}</span></div>`).join('')}
+  </div>` : '';
+  const alertHtml = t.alert ? `<div class="tkt-alert">${t.alert}</div>` : '';
+
+  div.innerHTML = `
+    <div class="tkt-hdr" style="background:${t.color}">
+      <div class="tkt-emoji">${t.icon}</div>
+      <div class="tkt-hdr-text">
+        <h2>${t.name}</h2>
+        <p>${t.subtitle}</p>
+      </div>
+    </div>
+    <div class="tkt-body">
+      <div class="tkt-time-block">
+        <div class="tkt-time">${t.time}</div>
+        <div class="tkt-time-label">${t.timeRange}</div>
+      </div>
+      <div class="tkt-grid">
+        <div class="tkt-field"><strong>Who</strong><span>${t.people.join(' + ')}</span></div>
+        <div class="tkt-field"><strong>Total paid</strong><span>${t.amount}</span></div>
+        <div class="tkt-field"><strong>Order ref</strong><span>${t.order}</span></div>
+      </div>
+      <div class="tkt-refs">${refsHtml}</div>
+      ${inclHtml}
+      ${warnHtml}
+      ${alertHtml}
+      <div class="tkt-acts">
+        <a href="${t.mapsUrl}" target="_blank" class="tkt-btn" style="background:#4285F4;color:white">🗺️ Open in Maps</a>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=${t.lat},${t.lng}" target="_blank" class="tkt-btn" style="background:#0F9D58;color:white">📍 Directions</a>
+        <button onclick="flyToTicket('${t.id}')" class="tkt-btn" style="background:#FF6B35;color:white">📍 Show on Map</button>
+      </div>
+    </div>`;
+  tktEl.appendChild(div);
+});
+
+function flyToTicket(id) {
+  const locId = id === 'giotto' ? 'campanile' : id === 'uffizi' ? 'uffizi' : 'accademia';
+  flyTo(locId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TIPS RENDER
+═══════════════════════════════════════════════════════ */
+const tipsEl = document.getElementById('tips');
+const TIPS = [
+  { icon:'🚕', title:'Getting Around', items:[
+    { icon:'🚕', h:'Taxis',           b:'Use official white Florence taxis (metered). itTaxi app or Uber work well. Hotel → Fiesole ~€20–25; → Airport ~€22–25.' },
+    { icon:'🚌', h:'Bus 13',          b:'Runs from Piazza San Marco to Piazzale Michelangelo. Perfect for the Saturday sunset.' },
+    { icon:'🚶', h:'Walking',          b:'Florence\'s centre is tiny — almost everything within 15–20 min from Hotel Berchielli.' },
+    { icon:'✈️', h:'Airport taxi',    b:'Aeroporto Amerigo Vespucci (Peretola/FLR) is ~20–25 min. Book via itTaxi in advance.' },
+  ]},
+  { icon:'🍽️', title:'Eating & Drinking', items:[
+    { icon:'☕', h:'Coffee culture',    b:'Espresso at the bar = authentic and cheaper. Cappuccino = morning only. "Un caffè" = espresso.' },
+    { icon:'🍷', h:'Tipping',          b:'Not expected in Italy. Round up or leave €1–2 per person at restaurants. Never tip at bars.' },
+    { icon:'⏰', h:'Meal times',       b:'Lunch 13:00–14:30. Dinner not before 19:30 (restaurants open then). Earlier = touristy.' },
+    { icon:'🥩', h:'Must-try dishes',  b:'Bistecca alla Fiorentina, Ribollita, Pappardelle al cinghiale, Lampredotto, Schiacciata.' },
+    { icon:'🍦', h:'Gelato tips',     b:'Real gelato is stored in metal containers with lids. Vivoli, La Carraia, Gelateria dei Neri are the real deal.' },
+  ]},
+  { icon:'🏛️', title:'Visiting Sights', items:[
+    { icon:'👗', h:'Church dress code', b:'Cover shoulders and knees for all churches (Duomo, S.M. Novella, etc). Pack a scarf or light layer.' },
+    { icon:'🎒', h:'Saturday: NO bags', b:'Campanile at 11:15 prohibits backpacks. Small bags max 40×30×18cm only. Leave bags at hotel.' },
+    { icon:'🌅', h:'Best visit times',  b:'Early morning (8–9am) beats the crowds. Sights at opening are quiet. Midday is busiest.' },
+    { icon:'📷', h:'Photography',      b:'No flash in churches. Uffizi allows photography without flash. Brancacci Chapel = no photos.' },
+  ]},
+  { icon:'💶', title:'Money & Payments', items:[
+    { icon:'💳', h:'Cards',            b:'Most places accept cards. Carry some cash (€50–100) — small bars and street food are often cash-only.' },
+    { icon:'🧾', h:'Coperto',          b:'Many restaurants charge €1.50–3 per person "cover charge". Normal — it covers bread.' },
+    { icon:'🏧', h:'ATMs',             b:'Use ATMs from Italian banks (Intesa, UniCredit). Avoid standalone ATMs with extra fees.' },
+  ]},
+  { icon:'🌤️', title:'February in Florence', items:[
+    { icon:'🌡️', h:'Weather',         b:'8–14°C. Can be chilly and rainy. Dress in layers, bring a waterproof jacket. Fewer tourists = a real advantage!' },
+    { icon:'👟', h:'Footwear',         b:'Comfortable walking shoes — cobblestones are everywhere. Break them in before the trip.' },
+    { icon:'🌇', h:'Sunset',           b:'Sunset in February is around 17:40–17:50. Perfect for Piazzale Michelangelo on Saturday.' },
+  ]},
+  { icon:'🗣️', title:'Useful Italian Phrases', phrases:[
+    ['Un caffè per favore','One coffee please'],['Il conto, per favore','The bill please'],
+    ['Grazie / Prego','Thank you / You\'re welcome'],['Dov\'è...?','Where is...?'],
+    ['Buongiorno / Buonasera','Good morning / evening'],['Scusi','Excuse me / Sorry'],
+    ['Quanto costa?','How much?'],['Parla inglese?','Do you speak English?'],
+    ['Vorrei...','I would like...'],['Per favore','Please'],
+  ]},
+  { icon:'🆘', title:'Emergency & Useful Contacts', items:[
+    { icon:'🚨', h:'Emergency (all)',   b:'112 (European emergency — police, ambulance, fire)' },
+    { icon:'🏥', h:'Hospital',          b:'Ospedale Santa Maria Nuova, Piazza S.M. Nuova 1 (~10 min from hotel)' },
+    { icon:'💊', h:'Pharmacy',          b:'Look for green cross. Farmacia Centrale (Piazza della Repubblica) open late.' },
+    { icon:'📞', h:'Hotel Berchielli',  b:'+39 055 264061' },
+  ]},
 ];
 
-TIPS_DATA.forEach(section => {
+TIPS.forEach(s => {
   const div = document.createElement('div');
   div.className = 'tips-section';
-
-  if (section.phrases) {
-    div.innerHTML = `<h3>${section.icon} ${section.title}</h3>
-      <div class="phrase-grid">${section.phrases.map(([it,en])=>`
-        <div class="phrase"><strong>${it}</strong><em>${en}</em></div>`).join('')}
-      </div>`;
+  if (s.phrases) {
+    div.innerHTML = `<h3>${s.icon} ${s.title}</h3><div class="phrase-grid">${s.phrases.map(([it,en])=>`<div class="phrase"><strong>${it}</strong><em>${en}</em></div>`).join('')}</div>`;
   } else {
-    div.innerHTML = `<h3>${section.icon} ${section.title}</h3>`
-      + section.items.map(i => `
-        <div class="tip-row">
-          <div class="tip-icon">${i.icon}</div>
-          <div class="tip-body"><strong>${i.h}</strong><span>${i.b}</span></div>
-        </div>`).join('');
+    div.innerHTML = `<h3>${s.icon} ${s.title}</h3>`+s.items.map(i=>`<div class="tip-row"><div class="tip-icon">${i.icon}</div><div class="tip-body"><strong>${i.h}</strong><span>${i.b}</span></div></div>`).join('');
   }
   tipsEl.appendChild(div);
 });
