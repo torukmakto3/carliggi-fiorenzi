@@ -356,17 +356,26 @@ const TICKETS = [
     id:'accademia', icon:'🗿', color:'#1A3A7A',
     name:'Galleria dell\'Accademia',
     subtitle:'Statue of David · Saturday 21 Feb 2026',
-    time:'08:45', timeRange:'08:45 – 09:00',
-    people:['Luis Nunez'],
-    order:'22111728', amount:'€24.00',
-    refs:[{l:'Order / ID',v:'22111728 · ID 67'},{l:'Customer',v:'Luis Nunez Clavijo'}],
+    time:'08:15 / 08:45', timeRange:'Carla: 08:15–08:30 · Luis: 08:45–09:00',
+    people:['Carla Montero · 08:15', 'Luis Nunez · 08:45'],
+    order:'22111728 / 22111866', amount:'€48.00 (€24 × 2)',
+    refs:[
+      {l:'Luis – Order / ID', v:'22111728 · ID 67'},
+      {l:'Carla – Order / ID', v:'22111866 · ID 135'},
+      {l:'Customer', v:'Luis Nunez Clavijo'},
+    ],
+    pdfs:[
+      {label:'🎟️ Carla\'s ticket', file:'Your%20ticketdirect%20order%20number%2022111866.pdf'},
+      {label:'🎟️ Luis\'s ticket',  file:'Your%20ticketdirect%20order%20number%2022111728.pdf'},
+    ],
     includes:null,
     warnings:[
+      '⏰ Different entry times — Carla enters 08:15, Luis enters 08:45. Arrive together, Carla goes in first.',
       '🎒 Small bags only — max 40×30×18cm. No cloakroom.',
       '🔍 Metal detector security check at entry.',
-      '📱 Show ticket on phone screen at access control.',
+      '📱 Show each ticket on the correct person\'s phone.',
     ],
-    alert:'⚠️ Only 1 Accademia ticket in files (Luis). Verify Carla\'s ticket!',
+    alert:null,
     mapsUrl:'https://maps.google.com/?q=Galleria+Accademia+Via+Ricasoli+Florence',
     lat:43.77672, lng:11.25815,
   },
@@ -383,6 +392,10 @@ const TICKETS = [
       {l:'Booking #2',   v:'87-CGYRRZO'},
       {l:'Ticket #1',    v:'12-2421-63-1927280297'},
       {l:'Ticket #2',    v:'12-2421-63-1927280298'},
+    ],
+    pdfs:[
+      {label:'🎟️ Ticket #1 (Luis)',  file:'Biglietto-87-YUSCLCE-53214008.pdf'},
+      {label:'🎟️ Ticket #2 (Carla)', file:'Biglietto-87-YUSCLCE-53214009.pdf'},
     ],
     includes:[
       '🔔 Campanile (Bell Tower) — 414 steps, no lift',
@@ -408,6 +421,9 @@ const TICKETS = [
     people:['Luis Nunez', 'Carla Montero'],
     order:'S22WTAG2', amount:'€58.00 (€29 × 2)',
     refs:[{l:'PNR',v:'S22WTAG2'},{l:'Issued',v:'19-02-2026'}],
+    pdfs:[
+      {label:'🎟️ Both tickets', file:'Tickets.pdf'},
+    ],
     includes:null,
     warnings:[
       '📱 Show ticket on phone or print — present at access control.',
@@ -662,16 +678,16 @@ const ITIN = [
     subtitle:'Hard anchors: Accademia 08:45 · Campanile 11:15 · Dinner 19:30',
     stats:['~9 km', '⛔ No backpacks!', 'Dinner in Fiesole'],
     stops:[
-      { time:'7:30', icon:'⚠️', name:'IMPORTANT: Pack light today',
+      { time:'7:15', icon:'⚠️', name:'IMPORTANT: Pack light today',
         desc:'The Campanile (11:15) does NOT allow backpacks. Leave large bags at the hotel. Small purses/sling bags (max 40×30×18cm) are fine. The Accademia also only allows small bags.',
         badges:['⛔ NO backpacks for Campanile', '🎒 Small bags max 40×30×18cm'] },
-      { time:'7:45', icon:'☕', name:'Quick Breakfast',
-        desc:'Quick espresso and cornetto at a bar near the hotel. You need to leave by 8:20.',
+      { time:'7:30', icon:'☕', name:'Quick Breakfast',
+        desc:'Quick espresso and cornetto at a bar near the hotel. Leave by 07:55 — Carla\'s Accademia slot is 08:15.',
         badges:[] },
-      { tr:'🚶 Leave hotel by 8:20 · 20 min walk · 1.5 km' },
-      { time:'08:45 ✅', icon:'🗿', name:'Galleria dell\'Accademia – BOOKED',
-        desc:'Michelangelo\'s David (1501–1504) — 5.17m of Carrara marble perfection. The hall of Prisoners (Michelangelo\'s unfinished figures) leading to David is profoundly moving. Allow 1.5 hrs.',
-        badges:['✅ BOOKED 08:45', '📱 Order 22111728 · show on phone', '⚠️ Carla: verify your ticket!'], loc:'accademia' },
+      { tr:'🚶 Leave hotel by 07:55 · 20 min walk · 1.5 km' },
+      { time:'08:15 / 08:45 ✅', icon:'🗿', name:'Galleria dell\'Accademia – BOOKED',
+        desc:'Two separate entry slots — arrive together, Carla enters first:\n• Carla: 08:15–08:30 (Order 22111866, ID 135)\n• Luis: 08:45–09:00 (Order 22111728, ID 67)\n\nWhile Carla is inside, Luis can wait at the café nearby or browse the street. Meet up inside at the David. Allow ~1.5 hrs total.',
+        badges:['✅ Carla 08:15 · Luis 08:45', '📱 Show correct ticket on each phone', '🎒 Bags max 40×30×18cm'], loc:'accademia' },
       { tr:'🚶 15 min to Duomo complex · 1.1 km' },
       { time:'10:15', icon:'🏛️', name:'Walk to Duomo Complex — Drop Bags',
         desc:'Walk south-west to the Duomo. If you have any bags beyond a small pouch, leave them at the Deposito Bagagli (luggage storage) inside the Duomo complex before your Campanile slot.',
@@ -925,12 +941,11 @@ itinEl.innerHTML = `
     <h3>⛔ Saturday Warning — Read Before You Go!</h3>
     <div class="alert-item">🎒 <span><strong>NO BACKPACKS on Saturday</strong> — Campanile strictly prohibits them. Leave at hotel or Deposito Bagagli at the Duomo complex.</span></div>
     <div class="alert-item">⏰ <span><strong>Campanile slot 11:15 is fixed</strong> and cannot be changed. Arrive at the tower by 11:00.</span></div>
-    <div class="alert-item">🗿 <span><strong>Leave hotel by 8:20</strong> to reach Accademia for 8:45 entry.</span></div>
-    <div class="alert-item">⚠️ <span><strong>Accademia: only 1 ticket confirmed for Luis</strong> — verify Carla's ticket before Saturday!</span></div>
+    <div class="alert-item">🗿 <span><strong>Leave hotel by 07:55</strong> — Carla enters Accademia at 08:15, Luis at 08:45.</span></div>
   </div>
   <div class="alert-card book">
     <h3>✅ Your Confirmed Bookings</h3>
-    <div class="alert-item">🗿 <span><strong>Accademia (David)</strong> — Sat 21 Feb · 08:45 · Order 22111728</span></div>
+    <div class="alert-item">🗿 <span><strong>Accademia (David) ×2</strong> — Sat 21 Feb · Carla 08:15 (Order 22111866) · Luis 08:45 (Order 22111728)</span></div>
     <div class="alert-item">🔔 <span><strong>Giotto Pass ×2</strong> (Campanile + Baptistery + Museo) — Sat 21 Feb · Campanile 11:15</span></div>
     <div class="alert-item">🖼️ <span><strong>Uffizi ×2</strong> — Sun 22 Feb · 09:00 · PNR S22WTAG2</span></div>
     <div class="alert-item">🍷 <span><strong>Trattoria Zà Zà</strong> — Fri 20 Feb · 19:30</span></div>
@@ -1031,9 +1046,9 @@ TICKETS.forEach(t => {
       ${warnHtml}
       ${alertHtml}
       <div class="tkt-acts">
-        <a href="${t.mapsUrl}" target="_blank" class="tkt-btn" style="background:#4285F4;color:white">🗺️ Open in Maps</a>
-        <a href="https://www.google.com/maps/dir/?api=1&destination=${t.lat},${t.lng}" target="_blank" class="tkt-btn" style="background:#0F9D58;color:white">📍 Directions</a>
-        <button onclick="flyToTicket('${t.id}')" class="tkt-btn" style="background:#FF6B35;color:white">📍 Show on Map</button>
+        ${(t.pdfs||[]).map(p=>`<a href="${p.file}" target="_blank" class="tkt-btn" style="background:#C44B2E;color:white">📄 ${p.label}</a>`).join('')}
+        <a href="${t.mapsUrl}" target="_blank" class="tkt-btn" style="background:#4285F4;color:white">🗺️ Maps</a>
+        <button onclick="flyToTicket('${t.id}')" class="tkt-btn" style="background:#FF6B35;color:white">📍 On Map</button>
       </div>
     </div>`;
   tktEl.appendChild(div);
